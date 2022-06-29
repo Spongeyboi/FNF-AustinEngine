@@ -35,6 +35,8 @@ import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import lime.app.Application;
 import openfl.Assets;
+import source.AustinData;
+
 
 using StringTools;
 typedef TitleData =
@@ -47,7 +49,9 @@ typedef TitleData =
 	gfx:Float,
 	gfy:Float,
 	backgroundSprite:String,
-	bpm:Int
+	bpm:Int,
+	tweens:Bool,
+	austinLogo:Bool
 }
 class TitleState extends MusicBeatState
 {
@@ -80,6 +84,13 @@ class TitleState extends MusicBeatState
 	var titleJSON:TitleData;
 	
 	public static var updateVersion:String = '';
+
+	var logoTween:FlxTween;
+	var logoTweenMore:FlxTween;
+	var gfTween:FlxTween;
+
+	var austinJson:AustinJSON;
+
 
 	override public function create():Void
 	{
@@ -152,8 +163,16 @@ class TitleState extends MusicBeatState
 		Highscore.load();
 
 		// IGNORE THIS!!!
-		titleJSON = Json.parse(Paths.getTextFromFile('images/gfDanceTitle.json'));
-		
+
+		austinJson = AustinData.get();
+		if (austinJson != null){
+			trace('AustinData found');
+			titleJSON = Json.parse(Paths.getTextFromFile('austinData.json')).title;
+		}else{
+			trace('Fallingback to old json');
+			titleJSON = Json.parse(Paths.getTextFromFile('images/gfDanceTitle.json'));
+		}
+
 		#if TITLE_SCREEN_EASTER_EGG
 		if (FlxG.save.data.psychDevsEasterEgg == null) FlxG.save.data.psychDevsEasterEgg = ''; //Crash prevention
 		switch(FlxG.save.data.psychDevsEasterEgg.toUpperCase())
@@ -268,12 +287,15 @@ class TitleState extends MusicBeatState
 		add(bg);
 
 		logoBl = new FlxSprite(titleJSON.titlex, titleJSON.titley);
-		logoBl.frames = Paths.getSparrowAtlas('logoBumpin');
+		if (titleJSON.austinLogo == true){
+			logoBl.frames = Paths.getSparrowAtlas('austinLogoBumpin');
+		}else logoBl.frames = Paths.getSparrowAtlas('logoBumpin');
 		
 		logoBl.antialiasing = ClientPrefs.globalAntialiasing;
 		logoBl.animation.addByPrefix('bump', 'logo bumpin', 24, false);
 		logoBl.animation.play('bump');
 		logoBl.updateHitbox();
+		bg.setGraphicSize(Std.int(bg.width * 1.2));
 		// logoBl.screenCenter();
 		// logoBl.color = FlxColor.BLACK;
 
@@ -347,8 +369,12 @@ class TitleState extends MusicBeatState
 		logo.antialiasing = ClientPrefs.globalAntialiasing;
 		// add(logo);
 
-		// FlxTween.tween(logoBl, {y: logoBl.y + 50}, 0.6, {ease: FlxEase.quadInOut, type: PINGPONG});
-		// FlxTween.tween(logo, {y: logoBl.y + 50}, 0.6, {ease: FlxEase.quadInOut, type: PINGPONG, startDelay: 0.1});
+		if (titleJSON.tweens == true){
+			bg.setGraphicSize(Std.int(bg.width * 1.1));
+			FlxTween.tween(bg,{x: bg.x+25}, 2, {ease:FlxEase.quadInOut,type:PINGPONG});
+			logoTweenMore = FlxTween.tween(logoBl, {y: logoBl.y + 50}, 0.6, {ease: FlxEase.quadInOut, type: PINGPONG});
+			// FlxTween.tween(logo, {y: logoBl.y + 50}, 0.6, {ease: FlxEase.quadInOut, type: PINGPONG, startDelay: 0.1});
+		}
 
 		credGroup = new FlxGroup();
 		add(credGroup);
@@ -444,6 +470,22 @@ class TitleState extends MusicBeatState
 
 				transitioning = true;
 				// FlxG.sound.music.stop();
+				if (titleJSON.tweens == true){
+					if (gfTween != null) gfTween.cancel();
+					if (logoTween != null) logoTween.cancel();
+					if (logoTweenMore != null) logoTweenMore.cancel();
+				
+					gfDance.x = titleJSON.gfx;
+					gfDance.y = titleJSON.gfy;
+					logoBl.x = titleJSON.titlex;
+					logoBl.y = titleJSON.titley;
+					
+					FlxTween.tween(gfDance, {y: FlxG.height + 50}, 1.5, {ease: FlxEase.elasticIn});
+					FlxTween.tween(logoBl, {y: -(FlxG.height) - 50}, 1.5, {ease: FlxEase.elasticIn});
+					FlxTween.tween(titleText, {y: -(FlxG.height) - 50}, 1.5, {ease: FlxEase.elasticIn});
+				}
+
+				FlxG.sound.music.fadeOut(0.7, 0);
 
 				new FlxTimer().start(1, function(tmr:FlxTimer)
 				{
@@ -554,6 +596,9 @@ class TitleState extends MusicBeatState
 
 	private var sickBeats:Int = 0; //Basically curBeat but won't be skipped if you hold the tab or resize the screen
 	public static var closedState:Bool = false;
+	var daAustinLength:Int;
+			//Extra bs so
+	var curAustinLength:Int = 0;
 	override function beatHit()
 	{
 		super.beatHit();
@@ -570,7 +615,15 @@ class TitleState extends MusicBeatState
 		}
 
 		if(!closedState) {
+			daAustinLength = austinJson.title.fnfText.length;
 			sickBeats++;
+			if (curAustinLength == daAustinLength){
+				skipIntro();
+			}else if (sickBeats > 12){
+				addMoreText(austinJson.title.fnfText[curAustinLength]);
+				curAustinLength++;
+				trace(sickBeats + ".. " + curAustinLength + '.. ' + daAustinLength);
+			}else{
 			switch (sickBeats)
 			{
 				case 1:
@@ -597,17 +650,24 @@ class TitleState extends MusicBeatState
 				// credTextShit.screenCenter();
 				case 5:
 					#if PSYCH_WATERMARKS
-					createCoolText(['Not associated', 'with'], -40);
+					createCoolText(['Austin Engine by'], 30);
 					#else
 					createCoolText(['In association', 'with'], -40);
 					#end
 				case 7:
+					#if PSYCH_WATERMARKS
+					addMoreText('SylveonDev', 30);
+					addMoreText('Spongey', 30);
+					#else
 					addMoreText('newgrounds', -40);
 					ngSpr.visible = true;
+					#end
 				// credTextShit.text += '\nNewgrounds';
 				case 8:
-					deleteCoolText();
+					#if !PSYCH_WATERMARKS
 					ngSpr.visible = false;
+					#end
+					deleteCoolText();
 				// credTextShit.visible = false;
 
 				// credTextShit.text = 'Shoutouts Tom Fulp';
@@ -623,6 +683,7 @@ class TitleState extends MusicBeatState
 				// credTextShit.visible = false;
 				// credTextShit.text = "Friday";
 				// credTextShit.screenCenter();
+				/*
 				case 13:
 					addMoreText('Friday');
 				// credTextShit.visible = true;
@@ -631,10 +692,11 @@ class TitleState extends MusicBeatState
 				// credTextShit.text += '\nNight';
 				case 15:
 					addMoreText('Funkin'); // credTextShit.text += '\nFunkin';
-
-				case 16:
+				
+				case 16 + daAustinLength:
 					skipIntro();
-			}
+				*/
+			}}
 		}
 	}
 
@@ -644,6 +706,13 @@ class TitleState extends MusicBeatState
 	{
 		if (!skippedIntro)
 		{
+			if (titleJSON.tweens == true){
+				gfDance.x = FlxG.width + 50;
+				logoBl.x =  -(FlxG.width) - 50;
+				gfTween = FlxTween.tween(gfDance, {x: titleJSON.gfx, y:titleJSON.gfy}, 3, {ease: FlxEase.elasticOut, startDelay: 0.25});
+				logoTween = FlxTween.tween(logoBl, {x: titleJSON.titlex, y:titleJSON.titley}, 3, {ease: FlxEase.elasticOut, startDelay: 0.25});
+			}
+
 			if (playJingle) //Ignore deez
 			{
 				var easteregg:String = FlxG.save.data.psychDevsEasterEgg;
@@ -669,7 +738,7 @@ class TitleState extends MusicBeatState
 						skippedIntro = true;
 						playJingle = false;
 						
-						FlxG.sound.playMusic(Paths.music('freakyMenu'), 0);
+						FlxG.sound.playMusic(Paths.music(austinJson.menu.titleMusic), 0);
 						FlxG.sound.music.fadeIn(4, 0, 0.7);
 						return;
 				}

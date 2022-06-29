@@ -52,8 +52,16 @@ class VisualsUISubState extends BaseOptionsMenu
 			"What should the Time Bar display?",
 			'timeBarType',
 			'string',
-			'Time Left',
-			['Time Left', 'Time Elapsed', 'Song Name', 'Disabled']);
+			'Song name and Time Left',
+			['Song name and Time Left','Time Left', 'Time Elapsed and Total time', 'Time Elapsed', 'Song Name', 'Disabled']);
+		addOption(option);
+
+		var option:Option = new Option('Health Icon Style:',
+			"What health icon style do you want.\nThere are a lot of them.",
+			'iconStyle',
+			'string',
+			'Austin Engine Style',
+			['Classic', 'Austin Engine Style', 'OS Engine Style', 'Golden Apple Style', 'Dave and Bambi Style', 'Grow/Shrink','static','funny','Ends of the health bar']);
 		addOption(option);
 
 		var option:Option = new Option('Flashing Lights',

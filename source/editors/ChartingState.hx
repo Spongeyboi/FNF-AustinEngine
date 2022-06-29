@@ -61,6 +61,10 @@ class ChartingState extends MusicBeatState
 		'Alt Animation',
 		'Hey!',
 		'Hurt Note',
+		'Kill Note',
+		'Heal Note',
+		'Warning Note',
+		'Poison Note',
 		'GF Sing',
 		'No Animation'
 	];
@@ -85,7 +89,20 @@ class ChartingState extends MusicBeatState
 		['Alt Idle Animation', "Sets a specified suffix after the idle animation name.\nYou can use this to trigger 'idle-alt' if you set\nValue 2 to -alt\n\nValue 1: Character to set (Dad, BF or GF)\nValue 2: New suffix (Leave it blank to disable)"],
 		['Screen Shake', "Value 1: Camera shake\nValue 2: HUD shake\n\nEvery value works as the following example: \"1, 0.05\".\nThe first number (1) is the duration.\nThe second number (0.05) is the intensity."],
 		['Change Character', "Value 1: Character to change (Dad, BF, GF)\nValue 2: New character's name"],
-		['Change Scroll Speed', "Value 1: Scroll Speed Multiplier (1 is default)\nValue 2: Time it takes to change fully in seconds."]
+		['Change Scroll Speed', "Value 1: Scroll Speed Multiplier (1 is default)\nValue 2: Time it takes to change fully in seconds."],
+		['Play cutscene', "Plays a mid-song cutscene.\nThe engine may freeze for a few seconds.\nValue 1: The video file"],
+		['Set poison', "Sets the amount of health to deplete over time\nValue 1: The number to deplete (0 is default)\n\nYou can also use poison notes\nor heal notes to change poison."],
+		['Default Camera Zoom', "Sets the default camera zoom.It's\nlike \"Add Camera Zoom\" but it doesn't zoom back.\nValue 1: Camera Zoom (Default: Based on map)\nValue 2: Tween Duration (Default: 0.5)"],
+		['Default CamHUD Zoom', "Sets the default hud zoom.It's\nlike \"Add Camera Zoom\" but it doesn't zoom back.\nValue 1: HUD Zoom (Default: 1)\nValue 2: Tween Duration (Default: 0.5)"],
+		['Flash camera', "Flashes the camera white\nValue 1: Duration (Default: 1)"],
+		['Do Camera rotate',"Value 1: Speed\nValue 2: Angle"],
+		['Stop Camera rotate',"No values needed"],
+		['Do CamHud rotate',"Value 1: Speed\nValue 2: Angle"],
+		['Stop CamHud rotate',"No values needed"],
+		['Do note move',"Value 1: Speed\nValue 2: Distance"],
+		['Stop note move',"No values needed"],
+		['Flip CamHud',"Flips the hud 180 degrees."],
+		['Jumpscare','Flashes an image on screen.\nDon\'t spam this event or you\'ll cause some weird shit to happen.\nValue 1: The image\nValue 2: The audio and duration (ex.  \"vineboom, 1\")']
 	];
 
 	var _file:FileReference;
@@ -161,7 +178,8 @@ class ChartingState extends MusicBeatState
 		8,
 		12,
 		16,
-		24
+		24,
+		32
 	];
 	#else //The grid gets all black when over 1/12 snap
 	var zoomList:Array<Float> = [

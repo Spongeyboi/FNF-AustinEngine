@@ -1,0 +1,29 @@
+{	
+	"preload": false,
+	"title":{
+		"fnfText":["Friday","Night","Funkin"],
+		"titlex":-150,
+		"titley":-100,
+		"startx":100,
+		"starty":576,
+		"gfx":512,
+		"gfy":40,
+		"backgroundSprite":"TitleBG",
+		"bpm":102,
+		"tweens": true,
+		"austinLogo": true
+	},
+	"menu":{
+        "titleMusic":"freakyMenu",
+        "mainMusic":"menuMusic",
+        "optionMusic":"breakfast",
+		"centerMenuButtons":true,
+		"menuButtonsX":"100",
+		"austinStyled":true
+    },
+	"gameplay":{
+		"gfEnabled":true,
+		"watermark":true,
+		"watermarkText":"Austin Engine"
+	}
+}

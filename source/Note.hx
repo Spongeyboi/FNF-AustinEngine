@@ -111,6 +111,30 @@ class Note extends FlxSprite
 						missHealth = 0.3;
 					}
 					hitCausesMiss = true;
+				case 'Kill Note':
+					ignoreNote = mustPress;
+					reloadNote('KILL');
+					colorSwap.hue = 0;
+					colorSwap.saturation = 0;
+					colorSwap.brightness = 0;
+					hitCausesMiss = true;
+				case 'Heal Note':
+					ignoreNote = mustPress;
+					reloadNote('HEAL');
+					colorSwap.hue = 0;
+					colorSwap.saturation = 0;
+					colorSwap.brightness = 0;
+				case 'Warning Note':
+					reloadNote('WARN');
+					colorSwap.hue = 0;
+					colorSwap.saturation = 0;
+					colorSwap.brightness = 0;
+				case 'Poison Note':
+					ignoreNote = mustPress;
+					reloadNote('POISON');
+					colorSwap.hue = 0;
+					colorSwap.saturation = 0;
+					colorSwap.brightness = 0;
 				case 'No Animation':
 					noAnimation = true;
 				case 'GF Sing':

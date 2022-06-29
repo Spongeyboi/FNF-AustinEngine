@@ -20,12 +20,17 @@ import lime.app.Application;
 import Achievements;
 import editors.MasterEditorMenu;
 import flixel.input.keyboard.FlxKey;
+import flixel.addons.display.FlxBackdrop;
+import source.AustinData;
+
 
 using StringTools;
 
 class MainMenuState extends MusicBeatState
 {
-	public static var psychEngineVersion:String = '0.5.2h'; //This is also used for Discord RPC
+	//public static var psychEngineVersion:String = '0.5.2h'; //This is also used for Discord RPC
+	public static var psychEngineVersion:String = '0.1'; //This is also used for Discord RPC
+	public static var realpsychEngineVersion:String = '0.5.2h'; //This is also used for Discord RPC
 	public static var curSelected:Int = 0;
 
 	var menuItems:FlxTypedGroup<FlxSprite>;
@@ -46,6 +51,11 @@ class MainMenuState extends MusicBeatState
 	var camFollow:FlxObject;
 	var camFollowPos:FlxObject;
 	var debugKeys:Array<FlxKey>;
+
+	var austinJson:AustinJSON = AustinData.get();
+
+	var gradTween:FlxTween;
+
 
 	override function create()
 	{
@@ -78,6 +88,25 @@ class MainMenuState extends MusicBeatState
 		bg.screenCenter();
 		bg.antialiasing = ClientPrefs.globalAntialiasing;
 		add(bg);
+
+		var bgOverlay = new FlxBackdrop(Paths.image('menubgOverlay'), 0.2, 0, true, true);
+		bgOverlay.velocity.set(200, 200);
+		bgOverlay.updateHitbox();
+		bgOverlay.alpha = 0.5;
+		bgOverlay.screenCenter(X);
+		bgOverlay.visible = austinJson.menu.austinStyled;
+		add(bgOverlay);
+
+		var bgGradient:FlxSprite = new FlxSprite(-80).loadGraphic(Paths.image('menubgGradient'));
+		bgGradient.scrollFactor.set(0, yScroll);
+		bgGradient.setGraphicSize(Std.int(bgGradient.width * 1.175));
+		bgGradient.updateHitbox();
+		bgGradient.screenCenter();
+		bgGradient.antialiasing = ClientPrefs.globalAntialiasing;
+		bgGradient.visible = austinJson.menu.austinStyled;
+		bgGradient.alpha = 0.75;
+		add(bgGradient);
+		gradTween = FlxTween.tween(bgGradient,{alpha: 0.25}, 3, {ease: FlxEase.quadInOut,type: PINGPONG});
 
 		camFollow = new FlxObject(0, 0, 1, 1);
 		camFollowPos = new FlxObject(0, 0, 1, 1);
@@ -115,7 +144,7 @@ class MainMenuState extends MusicBeatState
 			menuItem.animation.addByPrefix('selected', optionShit[i] + " white", 24);
 			menuItem.animation.play('idle');
 			menuItem.ID = i;
-			menuItem.screenCenter(X);
+			menuItem.x = austinJson.menu.menuButtonsX;
 			menuItems.add(menuItem);
 			var scr:Float = (optionShit.length - 4) * 0.135;
 			if(optionShit.length < 6) scr = 0;
@@ -127,11 +156,11 @@ class MainMenuState extends MusicBeatState
 
 		FlxG.camera.follow(camFollowPos, null, 1);
 
-		var versionShit:FlxText = new FlxText(12, FlxG.height - 44, 0, "Psych Engine v" + psychEngineVersion, 12);
+		var versionShit:FlxText = new FlxText(12, FlxG.height - 44, 0, "Austin Engine v" + psychEngineVersion, 12);
 		versionShit.scrollFactor.set();
 		versionShit.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		add(versionShit);
-		var versionShit:FlxText = new FlxText(12, FlxG.height - 24, 0, "Friday Night Funkin' v" + Application.current.meta.get('version'), 12);
+		var versionShit:FlxText = new FlxText(12, FlxG.height - 24, 0, "Psych Engine v" + realpsychEngineVersion, 12);
 		versionShit.scrollFactor.set();
 		versionShit.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		add(versionShit);
@@ -154,6 +183,9 @@ class MainMenuState extends MusicBeatState
 		#end
 
 		super.create();
+
+		FlxG.sound.playMusic(Paths.music(austinJson.menu.mainMusic), 0);
+		FlxG.sound.music.fadeIn(4, 0, 0.7);
 	}
 
 	#if ACHIEVEMENTS_ALLOWED
@@ -195,6 +227,7 @@ class MainMenuState extends MusicBeatState
 			{
 				selectedSomethin = true;
 				FlxG.sound.play(Paths.sound('cancelMenu'));
+				FlxG.sound.music.fadeOut(0.4, 0);
 				MusicBeatState.switchState(new TitleState());
 			}
 
@@ -208,6 +241,10 @@ class MainMenuState extends MusicBeatState
 				{
 					selectedSomethin = true;
 					FlxG.sound.play(Paths.sound('confirmMenu'));
+
+					if (optionShit[curSelected] == 'options'){
+						FlxG.sound.music.fadeOut(0.7, 0);
+					}
 
 					if(ClientPrefs.flashing) FlxFlicker.flicker(magenta, 1.1, 0.15, false);
 
@@ -264,7 +301,9 @@ class MainMenuState extends MusicBeatState
 
 		menuItems.forEach(function(spr:FlxSprite)
 		{
-			spr.screenCenter(X);
+			if (austinJson.menu.centerMenuButtons == false){
+				spr.x = austinJson.menu.menuButtonsX;
+			}else spr.screenCenter(X);
 		});
 	}
 

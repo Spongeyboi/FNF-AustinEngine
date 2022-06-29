@@ -33,6 +33,7 @@ import Character;
 import flixel.system.debug.interaction.tools.Pointer.GraphicCursorCross;
 import lime.system.Clipboard;
 import flixel.animation.FlxAnimation;
+import source.AustinData;
 
 #if MODS_ALLOWED
 import sys.FileSystem;
@@ -45,6 +46,9 @@ using StringTools;
  */
 class CharacterEditorState extends MusicBeatState
 {
+	var austinJson:AustinJSON = AustinData.get();
+
+
 	var char:Character;
 	var ghostChar:Character;
 	var textAnim:FlxText;
@@ -1125,7 +1129,7 @@ class CharacterEditorState extends MusicBeatState
 					MusicBeatState.switchState(new PlayState());
 				} else {
 					MusicBeatState.switchState(new editors.MasterEditorMenu());
-					FlxG.sound.playMusic(Paths.music('freakyMenu'));
+					FlxG.sound.playMusic(Paths.music(austinJson.menu.mainMusic));
 				}
 				FlxG.mouse.visible = false;
 				return;

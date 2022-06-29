@@ -63,6 +63,14 @@ class GameplaySettingsSubState extends BaseOptionsMenu
 			true);
 		addOption(option);
 
+		var option:Option = new Option('Input System:',
+			"What input system you want.\nAustin: Frame based input system.\nPsych: Millisecond Input, aka ShadowMario's middle finger,\nthe trashiest input system in the game.",
+			'inputSystem',
+			'string',
+			'Austin',
+			['Austin', 'Psych']);
+		addOption(option);
+
 		var option:Option = new Option('Disable Reset Button',
 			"If checked, pressing Reset won't do anything.",
 			'noReset',

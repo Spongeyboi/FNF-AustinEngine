@@ -24,11 +24,15 @@ import flixel.util.FlxTimer;
 import flixel.input.keyboard.FlxKey;
 import flixel.graphics.FlxGraphic;
 import Controls;
+import source.AustinData;
+
 
 using StringTools;
 
 class OptionsState extends MusicBeatState
 {
+	var austinJson:AustinJSON = AustinData.get();
+
 	var options:Array<String> = ['Note Colors', 'Controls', 'Adjust Delay and Combo', 'Graphics', 'Visuals and UI', 'Gameplay'];
 	private var grpOptions:FlxTypedGroup<Alphabet>;
 	private static var curSelected:Int = 0;
@@ -87,6 +91,9 @@ class OptionsState extends MusicBeatState
 		ClientPrefs.saveSettings();
 
 		super.create();
+
+		FlxG.sound.playMusic(Paths.music(austinJson.menu.optionMusic), 0);
+		FlxG.sound.music.fadeIn(4, 0, 0.7);
 	}
 
 	override function closeSubState() {
@@ -106,6 +113,7 @@ class OptionsState extends MusicBeatState
 
 		if (controls.BACK) {
 			FlxG.sound.play(Paths.sound('cancelMenu'));
+			FlxG.sound.music.fadeOut(0.4, 0);
 			MusicBeatState.switchState(new MainMenuState());
 		}
 
