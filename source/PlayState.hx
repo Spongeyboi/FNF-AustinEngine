@@ -339,12 +339,6 @@ class PlayState extends MusicBeatState
 		practiceMode = ClientPrefs.getGameplaySetting('practice', false);
 		cpuControlled = ClientPrefs.getGameplaySetting('botplay', false);
 
-		iconrot = 1;
-		rotCam = false;
-		camera.angle = 0;
-		rotCamHud = false;
-		camHUD.angle = 0;
-		swayNotes = false;
 
 
 
@@ -355,6 +349,7 @@ class PlayState extends MusicBeatState
 		camHUD.bgColor.alpha = 0;
 		camOther.bgColor.alpha = 0;
 
+
 		FlxG.cameras.reset(camGame);
 		FlxG.cameras.add(camHUD);
 		FlxG.cameras.add(camOther);
@@ -363,6 +358,13 @@ class PlayState extends MusicBeatState
 		FlxCamera.defaultCameras = [camGame];
 		CustomFadeTransition.nextCamera = camOther;
 		//FlxG.cameras.setDefaultDrawTarget(camGame, true);
+
+		iconrot = 1;
+		rotCam = false;
+		camera.angle = 0;
+		rotCamHud = false;
+		camHUD.angle = 0;
+		swayNotes = false;
 
 		persistentUpdate = true;
 		persistentDraw = true;
@@ -2572,14 +2574,14 @@ class PlayState extends MusicBeatState
 					songPercent = (curTime / songLength);
 
 					var songCalc:Float = (songLength - curTime);
-					if(ClientPrefs.timeBarType == 'Time Elapsed' || ClientPrefs.timeBarType == 'Time Elapsed / Total Time') songCalc = curTime;
+					if(ClientPrefs.timeBarType == 'Time Elapsed' || ClientPrefs.timeBarType == 'Time Elapsed and Total time') songCalc = curTime;
 
 					var secondsTotal:Int = Math.floor(songCalc / 1000);
 					if(secondsTotal < 0) secondsTotal = 0;
 					
 					if (ClientPrefs.timeBarType == 'Song name and Time Left'){
 						timeTxt.text = SONG.song + '(' + FlxStringUtil.formatTime(secondsTotal, false) + ')';
-					}else if (ClientPrefs.timeBarType == 'Time Elapsed / Total Time'){
+					}else if (ClientPrefs.timeBarType == 'Time Elapsed and Total time'){
 						timeTxt.text = FlxStringUtil.formatTime(secondsTotal, false) + ' / ' + FlxStringUtil.formatTime(Math.floor(songLength / 1000), false);
 					}
 					else if(ClientPrefs.timeBarType != 'Song Name')

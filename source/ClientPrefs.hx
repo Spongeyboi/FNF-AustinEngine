@@ -14,7 +14,7 @@ class ClientPrefs {
 	public static var globalAntialiasing:Bool = true;
 	public static var noteSplashes:Bool = true;
 	public static var lowQuality:Bool = false;
-	public static var framerate:Int = 60;
+	public static var framerate:Int = #if !html 120 #else 60 #end;
 	public static var cursing:Bool = true;
 	public static var violence:Bool = true;
 	public static var camZooms:Bool = true;
@@ -25,7 +25,7 @@ class ClientPrefs {
 	public static var ghostTapping:Bool = true;
 	public static var inputSystem:String = 'Austin';
 	public static var iconStyle:String = 'Austin Engine Style';
-	public static var timeBarType:String = 'Song name and Time Left';
+	public static var timeBarType:String = 'Time Elapsed and Total time';
 	public static var scoreZoom:Bool = true;
 	public static var noReset:Bool = false;
 	public static var healthBarAlpha:Float = 1;
