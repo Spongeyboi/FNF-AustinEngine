@@ -67,6 +67,24 @@ using StringTools;
 
 class PlayState extends MusicBeatState
 {
+	public var iconrot = 1;
+
+	public static var rotCam = false;
+	var rotCamSpd:Float = 1;
+	var rotCamRange:Float = 10;
+	var rotCamInd = 0;
+
+	public static var rotCamHud = false;
+	var rotCamHudSpd:Float = 1;
+	var rotCamHudRange:Float = 10;
+	var rotCamHudInd = 0;
+				
+	public static var swayNotes = false;
+	var swayNotesSpd:Float = 1;
+	var swayNotesRange:Float = 10;
+	var swayNotesInd = 0;
+
+
 	public static var STRUM_X = 42;
 	public static var STRUM_X_MIDDLESCROLL = -278;
 
@@ -243,6 +261,7 @@ class PlayState extends MusicBeatState
 	public static var deathCounter:Int = 0;
 
 	public var defaultCamZoom:Float = 1.05;
+	public var defaultHudZoom:Float = 1;
 
 	// how big to stretch the pixel art assets
 	public static var daPixelZoom:Float = 6;
@@ -319,6 +338,15 @@ class PlayState extends MusicBeatState
 		instakillOnMiss = ClientPrefs.getGameplaySetting('instakill', false);
 		practiceMode = ClientPrefs.getGameplaySetting('practice', false);
 		cpuControlled = ClientPrefs.getGameplaySetting('botplay', false);
+
+		iconrot = 1;
+		rotCam = false;
+		camera.angle = 0;
+		rotCamHud = false;
+		camHUD.angle = 0;
+		swayNotes = false;
+
+
 
 		// var gameCam:FlxCamera = FlxG.camera;
 		camGame = new FlxCamera();
@@ -414,6 +442,7 @@ class PlayState extends MusicBeatState
 		}
 
 		defaultCamZoom = stageData.defaultZoom;
+		defaultHudZoom = 1;
 		isPixelStage = stageData.isPixelStage;
 		BF_X = stageData.boyfriend[0];
 		BF_Y = stageData.boyfriend[1];
@@ -1016,6 +1045,7 @@ class PlayState extends MusicBeatState
 		FlxG.camera.follow(camFollowPos, LOCKON, 1);
 		// FlxG.camera.setScrollBounds(0, FlxG.width, 0, FlxG.height);
 		FlxG.camera.zoom = defaultCamZoom;
+		camHUD.zoom = defaultHudZoom;
 		FlxG.camera.focusOn(camFollow);
 
 		FlxG.worldBounds.set(0, 0, FlxG.width, FlxG.height);
@@ -2361,6 +2391,36 @@ class PlayState extends MusicBeatState
 				}
 		}
 
+		if (rotCam)
+			{
+				rotCamInd ++;
+				camera.angle = Math.sin(rotCamInd / 100 * rotCamSpd) * rotCamRange;
+			}
+			else
+			{
+				rotCamInd = 0;
+			}
+	
+			if (rotCamHud)
+			{
+				rotCamHudInd ++;
+				camHUD.angle = Math.sin(rotCamHudInd / 100 * rotCamHudSpd) * rotCamHudRange;
+			}
+			else
+			{
+				rotCamHudInd = 0;
+			}
+			
+			if (swayNotes)
+			{
+				swayNotesInd ++;
+				camHUD.x = Math.sin(swayNotesInd / 100 * swayNotesSpd) * swayNotesRange;
+			}
+			else
+			{
+				swayNotesInd = 0;
+			}
+
 		if(!inCutscene) {
 			var lerpVal:Float = CoolUtil.boundTo(elapsed * 2.4 * cameraSpeed, 0, 1);
 			camFollowPos.setPosition(FlxMath.lerp(camFollowPos.x, camFollow.x, lerpVal), FlxMath.lerp(camFollowPos.y, camFollow.y, lerpVal));
@@ -2533,7 +2593,7 @@ class PlayState extends MusicBeatState
 		if (camZooming)
 		{
 			FlxG.camera.zoom = FlxMath.lerp(defaultCamZoom, FlxG.camera.zoom, CoolUtil.boundTo(1 - (elapsed * 3.125), 0, 1));
-			camHUD.zoom = FlxMath.lerp(1, camHUD.zoom, CoolUtil.boundTo(1 - (elapsed * 3.125), 0, 1));
+			camHUD.zoom = FlxMath.lerp(defaultHudZoom, camHUD.zoom, CoolUtil.boundTo(1 - (elapsed * 3.125), 0, 1));
 		}
 
 		FlxG.watch.addQuick("beatShit", curBeat);
@@ -3137,6 +3197,93 @@ class PlayState extends MusicBeatState
 							songSpeedTween = null;
 						}
 					});
+				}
+			case 'Set poison':
+				var val1:Float = Std.parseFloat(value1);
+				if(Math.isNaN(val1)) val1 = 1;
+				poison = val1;
+				var duration:Float = 0.5;
+				if (value2 != null) { duration = Std.parseFloat(value2); }
+				if (Math.isNaN(duration)) duration = 0.5;
+				if (value1 != null){
+					defaultCamZoom = Std.parseFloat(value1);
+				}else{
+					defaultCamZoom = 1;
+				}
+
+				if(!camZooming) { //Just a way for preventing it to be permanently zoomed until Skid & Pump hits a note
+					FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom}, duration);
+				}
+			case 'Default CamHUD Zoom':
+				var duration:Float = 0.5;
+				if (value2 != null) { duration = Std.parseFloat(value2); }
+				if (Math.isNaN(duration)) duration = 0.5;
+				if (value1 != null){
+					defaultHudZoom = Std.parseFloat(value1);
+				}else{
+					defaultHudZoom = 1;
+				}
+
+				if(!camZooming) { //Just a way for preventing it to be permanently zoomed until Skid & Pump hits a note
+					FlxTween.tween(camHUD, {zoom: defaultHudZoom}, duration);
+				}
+			case 'Flash camera':
+				var flashduration:Float = 1;
+				if (value1 != null) { flashduration = Std.parseFloat(value1); }
+				if (Math.isNaN(flashduration)) flashduration = 1;
+				
+				FlxG.camera.flash(FlxColor.WHITE, flashduration);
+				camHUD.flash(FlxColor.WHITE, flashduration);
+			case 'Do Camera rotate':
+				//Some Shaggy mod code because I have no fkin' idea what I'm doing :skull
+				rotCam = true;
+				rotCamSpd = Std.parseFloat(value1);
+				rotCamRange = Std.parseFloat(value2);
+			case 'Stop Camera rotate':
+				rotCam = false;
+				camera.angle = 0;
+			case 'Do CamHud rotate':
+				//Some Shaggy mod code because I have no fkin' idea what I'm doing :skull
+				rotCamHud = true;
+				rotCamHudSpd = Std.parseFloat(value1);
+				rotCamHudRange = Std.parseFloat(value2);
+			case 'Stop CamHud rotate':
+				rotCamHud = false;
+				camHUD.angle = 0;
+			case 'Do note move':
+				swayNotes = true;
+				swayNotesSpd = Std.parseFloat(value1);
+				swayNotesRange = Std.parseFloat(value2);
+			case 'Stop note move':
+				swayNotes = false;
+				camHUD.x = 0;
+			case 'Flip CamHud':
+				camHUD.angle = camHUD.angle + 180;
+			case 'Jumpscare':
+				//Very unstable, use it right.
+				var val2 = value2;
+				
+				//If no value specified, don't fire event
+				if (value1 != null && val2 != null){
+					var split:Array<String> = value2.split(',');
+
+					var jumpscare = new FlxSprite(0, 0).loadGraphic(Paths.image(value1));
+					add(jumpscare);
+					jumpscare.visible = false;
+					//So small ass jumpscares look blurry lol
+					jumpscare.screenCenter();
+					jumpscare.updateHitbox();
+					jumpscare.antialiasing = ClientPrefs.globalAntialiasing;
+					//You won't be seeing the notes very good so yeah
+					jumpscare.cameras = [camHUD];
+
+					jumpscare.visible = true;
+					FlxG.sound.play(Paths.sound(split[0]), 1);
+
+					FlxTween.tween(jumpscare, {alpha:0}, 3, {startDelay:Std.parseFloat(split[1]),ease:FlxEase.quadInOut,onComplete:function(twn:FlxTween){
+						//Cleanup
+						remove(jumpscare);
+					}});
 				}
 		}
 		callOnLuas('onEvent', [eventName, value1, value2]);
@@ -4258,7 +4405,7 @@ class PlayState extends MusicBeatState
 
 			if(!camZooming) { //Just a way for preventing it to be permanently zoomed until Skid & Pump hits a note
 				FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom}, 0.5);
-				FlxTween.tween(camHUD, {zoom: 1}, 0.5);
+				FlxTween.tween(camHUD, {zoom: defaultHudZoom}, 0.5);
 			}
 		}
 
