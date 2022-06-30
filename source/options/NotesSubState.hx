@@ -24,6 +24,8 @@ import flixel.util.FlxTimer;
 import flixel.input.keyboard.FlxKey;
 import flixel.graphics.FlxGraphic;
 import Controls;
+import flixel.addons.display.FlxBackdrop;
+import source.AustinData;
 
 using StringTools;
 
@@ -50,6 +52,15 @@ class NotesSubState extends MusicBeatSubstate
 		bg.screenCenter();
 		bg.antialiasing = ClientPrefs.globalAntialiasing;
 		add(bg);
+
+		var austinJson:AustinJSON = AustinData.get();
+		var bgOverlay = new FlxBackdrop(Paths.image('menubgOverlay'), 0.2, 0, true, true);
+		bgOverlay.velocity.set(200, 200);
+		bgOverlay.updateHitbox();
+		bgOverlay.alpha = 0.5;
+		bgOverlay.screenCenter(X);
+		bgOverlay.visible = austinJson.menu.austinStyled;
+		add(bgOverlay);
 		
 		blackBG = new FlxSprite(posX - 25).makeGraphic(870, 200, FlxColor.BLACK);
 		blackBG.alpha = 0.4;

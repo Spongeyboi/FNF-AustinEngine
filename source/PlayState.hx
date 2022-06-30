@@ -1062,8 +1062,8 @@ class PlayState extends MusicBeatState
 		poisonSpr.cameras = [camHUD];
 		add(poisonSpr);
 
-		poisonTxt = new FlxText((FlxG.height * 0.8)+ 3, FlxG.width - 81, FlxG.width, "0", 20);
-		poisonTxt.setFormat(Paths.font("vcr.ttf"), 20, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		poisonTxt = new FlxText(FlxG.height * 0.8, FlxG.width - 75, FlxG.width, "0", 20);
+		poisonTxt.setFormat(Paths.font("vcr.ttf"), 20, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		poisonTxt.scrollFactor.set();
 		poisonTxt.borderSize = 1.25;
 		poisonTxt.cameras = [camHUD];
@@ -2237,11 +2237,16 @@ class PlayState extends MusicBeatState
 		poisonTxt.text = Std.string(poison);
 
 		if (poison > 0){
+			poisonSpr.x = iconP1.x + 100;
+			poisonSpr.y = healthBarBG.y;
+			poisonTxt.x = iconP1.x + 125;
+			poisonTxt.y = healthBarBG.y + 10;
 			FlxTween.tween(poisonSpr,{alpha:1}, 2,{ease:FlxEase.quadOut});
 			FlxTween.tween(poisonTxt,{alpha:1}, 2,{ease:FlxEase.quadOut});
+			if (health > 0.02) health = health - (poison * 0.00025);
 		}else if (poison == 0 && poisonTxt.alpha == 1){
-			FlxTween.tween(poisonSpr,{alpha:0}, 2,{ease:FlxEase.quadOut});
-			FlxTween.tween(poisonTxt,{alpha:0}, 2,{ease:FlxEase.quadOut});
+			FlxTween.tween(poisonSpr,{alpha:0}, 2,{ease:FlxEase.quadIn});
+			FlxTween.tween(poisonTxt,{alpha:0}, 2,{ease:FlxEase.quadIn});
 		}
 
 		switch (curStage)
@@ -2433,6 +2438,8 @@ class PlayState extends MusicBeatState
 		if (ClientPrefs.iconStyle == "Dave and Bambi Style"){
 			iconP1.setGraphicSize(Std.int(FlxMath.lerp(150, iconP1.width, 0.8)),Std.int(FlxMath.lerp(150, iconP1.height, 0.8)));
 			iconP2.setGraphicSize(Std.int(FlxMath.lerp(150, iconP2.width, 0.8)),Std.int(FlxMath.lerp(150, iconP2.height, 0.8)));
+			iconP1.updateHitbox();
+			iconP2.updateHitbox();
 		}
 
 		var iconOffset:Int = 26;
@@ -2442,7 +2449,13 @@ class PlayState extends MusicBeatState
 			iconP1.x = healthBar.x + (healthBar.width  - iconOffset - 5);
 			iconP2.x = healthBar.x - (iconOffset * 2.5);
 		}
+		else if (ClientPrefs.iconStyle == 'Dave and Bambi Style'){
+			iconP1.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01) - iconOffset);
+			iconP2.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) - (iconP2.width - iconOffset);
+		}
 		else{	
+			//Literally every other health icon style in the engine :/
+			//You're goofy looking, SylveonDev
 			iconP1.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) + (150 * iconP1.scale.x - 150) / 2 - iconOffset;
 			iconP2.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) - (150 * iconP2.scale.x) / 2 - iconOffset * 2;
 		}
@@ -2499,7 +2512,7 @@ class PlayState extends MusicBeatState
 					songPercent = (curTime / songLength);
 
 					var songCalc:Float = (songLength - curTime);
-					if(ClientPrefs.timeBarType == 'Time Elapsed') songCalc = curTime;
+					if(ClientPrefs.timeBarType == 'Time Elapsed' || ClientPrefs.timeBarType == 'Time Elapsed / Total Time') songCalc = curTime;
 
 					var secondsTotal:Int = Math.floor(songCalc / 1000);
 					if(secondsTotal < 0) secondsTotal = 0;
@@ -2507,7 +2520,7 @@ class PlayState extends MusicBeatState
 					if (ClientPrefs.timeBarType == 'Song name and Time Left'){
 						timeTxt.text = SONG.song + '(' + FlxStringUtil.formatTime(secondsTotal, false) + ')';
 					}else if (ClientPrefs.timeBarType == 'Time Elapsed / Total Time'){
-						timeTxt.text = FlxStringUtil.formatTime(secondsTotal, false) + ' / ' + FlxStringUtil.formatTime(FlxG.sound.music.length, false);
+						timeTxt.text = FlxStringUtil.formatTime(secondsTotal, false) + ' / ' + FlxStringUtil.formatTime(Math.floor(songLength / 1000), false);
 					}
 					else if(ClientPrefs.timeBarType != 'Song Name')
 						timeTxt.text = FlxStringUtil.formatTime(secondsTotal, false);
@@ -3299,7 +3312,7 @@ class PlayState extends MusicBeatState
 
 				if (storyPlaylist.length <= 0)
 				{
-					FlxG.sound.playMusic(Paths.music('menuMusic'));
+					FlxG.sound.playMusic(Paths.music(austinJson.menu.mainMusic));
 
 					cancelMusicFadeTween();
 					if(FlxTransitionableState.skipNextTransIn) {
@@ -4054,6 +4067,7 @@ class PlayState extends MusicBeatState
 						if (poison < 0) poison = 0;
 						if (health > 100) health = 100;
 					case 'Poison Note':
+						if (poison < 0) poison = 0;
 						if (!note.isSustainNote) poison += 1;
 						if(boyfriend.animation.getByName('hurt') != null) {
 							boyfriend.playAnim('hurt', true);
@@ -4397,9 +4411,7 @@ class PlayState extends MusicBeatState
 			return;
 		}
 
-		if (health >= 5 && poison >= 1){
-			health -= 0.025 * poison;
-		}
+		
 
 		if (generatedMusic)
 		{
@@ -4451,7 +4463,6 @@ class PlayState extends MusicBeatState
 				iconP2.scale.set((curBeat % (gfSpeed * 2) == 0  ? 0.6 : 1.2), (curBeat % (gfSpeed * 2) == 0  ? 0.6 : 1.2));
 			case 'Dave and Bambi Style':
 				var funny:Float = (healthBar.percent * 0.01) + 0.01;
-
 				iconP1.setGraphicSize(Std.int(iconP1.width + (50 * funny)),Std.int(iconP2.height - (25 * funny)));
 				iconP2.setGraphicSize(Std.int(iconP2.width + (50 * (2 - funny))),Std.int(iconP2.height - (25 * (2 - funny))));
 			case 'Austin Engine Style':

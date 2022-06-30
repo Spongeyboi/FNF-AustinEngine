@@ -18,6 +18,9 @@ import sys.FileSystem;
 import sys.io.File;
 #end
 import lime.utils.Assets;
+import source.AustinData;
+import flixel.addons.display.FlxBackdrop;
+
 
 using StringTools;
 
@@ -48,6 +51,15 @@ class CreditsState extends MusicBeatState
 		bg = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
 		add(bg);
 		bg.screenCenter();
+
+		var austinJson:AustinJSON = AustinData.get();
+		var bgOverlay = new FlxBackdrop(Paths.image('menubgOverlay'), 0.2, 0, true, true);
+		bgOverlay.velocity.set(200, 200);
+		bgOverlay.updateHitbox();
+		bgOverlay.alpha = 0.5;
+		bgOverlay.screenCenter(X);
+		bgOverlay.visible = austinJson.menu.austinStyled;
+		add(bgOverlay);
 		
 		grpOptions = new FlxTypedGroup<Alphabet>();
 		add(grpOptions);

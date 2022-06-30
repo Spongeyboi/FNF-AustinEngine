@@ -10,6 +10,16 @@ import openfl.display.FPS;
 import openfl.display.Sprite;
 import openfl.events.Event;
 import openfl.display.StageScaleMode;
+import openfl.events.UncaughtErrorEvent;
+#if sys
+import sys.FileSystem;
+import sys.io.File;
+import sys.io.Process;
+#end
+import haxe.CallStack.StackItem;
+import haxe.CallStack;
+import haxe.io.Path;
+import lime.app.Application;
 
 class Main extends Sprite
 {
@@ -67,6 +77,7 @@ class Main extends Sprite
 			gameHeight = Math.ceil(stageHeight / zoom);
 		}
 
+		
 		#if !html5
 		initialState = PreloadState;
 		#else

@@ -14,6 +14,8 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.FlxCamera;
 import flixel.util.FlxStringUtil;
+import source.AustinData;
+
 
 class PauseSubState extends MusicBeatSubstate
 {
@@ -256,7 +258,9 @@ class PauseSubState extends MusicBeatSubstate
 					} else {
 						MusicBeatState.switchState(new FreeplayState());
 					}
-					FlxG.sound.playMusic(Paths.music('freakyMenu'));
+					
+					var austinJson:AustinJSON = AustinData.get();
+					FlxG.sound.playMusic(Paths.music(austinJson.menu.mainMusic));
 					PlayState.changedDifficulty = false;
 					PlayState.chartingMode = false;
 			}

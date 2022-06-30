@@ -13,6 +13,8 @@ import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.ui.FlxBar;
 import flixel.math.FlxPoint;
+import flixel.addons.display.FlxBackdrop;
+import source.AustinData;
 
 using StringTools;
 
@@ -63,6 +65,15 @@ class NoteOffsetState extends MusicBeatState
 		// Stage
 		var bg:BGSprite = new BGSprite('stageback', -600, -200, 0.9, 0.9);
 		add(bg);
+
+		var austinJson:AustinJSON = AustinData.get();
+		var bgOverlay = new FlxBackdrop(Paths.image('menubgOverlay'), 0.2, 0, true, true);
+		bgOverlay.velocity.set(200, 200);
+		bgOverlay.updateHitbox();
+		bgOverlay.alpha = 0.5;
+		bgOverlay.screenCenter(X);
+		bgOverlay.visible = austinJson.menu.austinStyled;
+		add(bgOverlay);
 
 		var stageFront:BGSprite = new BGSprite('stagefront', -650, 600, 0.9, 0.9);
 		stageFront.setGraphicSize(Std.int(stageFront.width * 1.1));

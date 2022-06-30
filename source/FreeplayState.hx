@@ -21,6 +21,9 @@ import WeekData;
 #if MODS_ALLOWED
 import sys.FileSystem;
 #end
+import source.AustinData;
+import flixel.addons.display.FlxBackdrop;
+
 
 using StringTools;
 
@@ -105,6 +108,15 @@ class FreeplayState extends MusicBeatState
 		bg.antialiasing = ClientPrefs.globalAntialiasing;
 		add(bg);
 		bg.screenCenter();
+
+		var austinJson:AustinJSON = AustinData.get();
+		var bgOverlay = new FlxBackdrop(Paths.image('menubgOverlay'), 0.2, 0, true, true);
+		bgOverlay.velocity.set(200, 200);
+		bgOverlay.updateHitbox();
+		bgOverlay.alpha = 0.5;
+		bgOverlay.screenCenter(X);
+		bgOverlay.visible = austinJson.menu.austinStyled;
+		add(bgOverlay);
 
 		grpSongs = new FlxTypedGroup<Alphabet>();
 		add(grpSongs);

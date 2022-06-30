@@ -89,6 +89,22 @@ class MainMenuState extends MusicBeatState
 		bg.antialiasing = ClientPrefs.globalAntialiasing;
 		add(bg);
 
+		
+		camFollow = new FlxObject(0, 0, 1, 1);
+		camFollowPos = new FlxObject(0, 0, 1, 1);
+		add(camFollow);
+		add(camFollowPos);
+
+		magenta = new FlxSprite(-80).loadGraphic(Paths.image('menuDesat'));
+		magenta.scrollFactor.set(0, yScroll);
+		magenta.setGraphicSize(Std.int(magenta.width * 1.175));
+		magenta.updateHitbox();
+		magenta.screenCenter();
+		magenta.visible = false;
+		magenta.antialiasing = ClientPrefs.globalAntialiasing;
+		magenta.color = 0xFFfd719b;
+		add(magenta);
+
 		var bgOverlay = new FlxBackdrop(Paths.image('menubgOverlay'), 0.2, 0, true, true);
 		bgOverlay.velocity.set(200, 200);
 		bgOverlay.updateHitbox();
@@ -104,24 +120,10 @@ class MainMenuState extends MusicBeatState
 		bgGradient.screenCenter();
 		bgGradient.antialiasing = ClientPrefs.globalAntialiasing;
 		bgGradient.visible = austinJson.menu.austinStyled;
-		bgGradient.alpha = 0.75;
+		bgGradient.alpha = 0.95;
 		add(bgGradient);
-		gradTween = FlxTween.tween(bgGradient,{alpha: 0.25}, 3, {ease: FlxEase.quadInOut,type: PINGPONG});
+		gradTween = FlxTween.tween(bgGradient,{alpha: 0.5}, 3, {ease: FlxEase.quadInOut,type: PINGPONG});
 
-		camFollow = new FlxObject(0, 0, 1, 1);
-		camFollowPos = new FlxObject(0, 0, 1, 1);
-		add(camFollow);
-		add(camFollowPos);
-
-		magenta = new FlxSprite(-80).loadGraphic(Paths.image('menuDesat'));
-		magenta.scrollFactor.set(0, yScroll);
-		magenta.setGraphicSize(Std.int(magenta.width * 1.175));
-		magenta.updateHitbox();
-		magenta.screenCenter();
-		magenta.visible = false;
-		magenta.antialiasing = ClientPrefs.globalAntialiasing;
-		magenta.color = 0xFFfd719b;
-		add(magenta);
 		
 		// magenta.scrollFactor.set();
 

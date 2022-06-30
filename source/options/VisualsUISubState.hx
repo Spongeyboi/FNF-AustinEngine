@@ -52,7 +52,7 @@ class VisualsUISubState extends BaseOptionsMenu
 			"What should the Time Bar display?",
 			'timeBarType',
 			'string',
-			'Song name and Time Left',
+			'Time Elapsed and Total time',
 			['Song name and Time Left','Time Left', 'Time Elapsed and Total time', 'Time Elapsed', 'Song Name', 'Disabled']);
 		addOption(option);
 
