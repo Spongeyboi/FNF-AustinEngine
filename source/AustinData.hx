@@ -41,7 +41,8 @@ typedef AustinJSON =
 	gameplay:{
 		gfEnabled:Bool,
         watermark:Bool,
-        watermarkText:String
+        watermarkText:String,
+        comboSprite:Bool
 	}
 }
 

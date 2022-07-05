@@ -8,6 +8,7 @@ import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.FlxCamera;
 import flixel.addons.transition.FlxTransitionableState;
+import flixel.graphics.FlxGraphic;
 import flixel.effects.FlxFlicker;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.group.FlxGroup.FlxTypedGroup;
@@ -21,6 +22,7 @@ import Achievements;
 import editors.MasterEditorMenu;
 import flixel.input.keyboard.FlxKey;
 import flixel.addons.display.FlxBackdrop;
+import flixel.system.debug.interaction.tools.Pointer.GraphicCursorCross;
 import source.AustinData;
 
 
@@ -185,6 +187,7 @@ class MainMenuState extends MusicBeatState
 		#end
 
 		super.create();
+		FlxG.mouse.visible = true;
 
 		FlxG.sound.playMusic(Paths.music(austinJson.menu.mainMusic), 0);
 		FlxG.sound.music.fadeIn(4, 0, 0.7);

@@ -237,6 +237,15 @@ class Paths
 		var returnAsset:FlxGraphic = returnGraphic(key, library);
 		return returnAsset;
 	}
+
+	#if desktop
+	//Kade Engine was discontinued, so I'll add this script into Austin
+	//https://github.com/KadeDev/Kade-Engine/pull/2806
+	static public function getHaxeScript(string:String)
+		{
+			return Assets.getText('assets/data/$string/haxeModchart.hx');
+		}
+	#end
 	
 	static public function getTextFromFile(key:String, ?ignoreMods:Bool = false):String
 	{

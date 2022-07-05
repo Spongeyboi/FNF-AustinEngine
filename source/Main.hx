@@ -20,6 +20,11 @@ import haxe.CallStack.StackItem;
 import haxe.CallStack;
 import haxe.io.Path;
 import lime.app.Application;
+import flixel.util.FlxColor;
+using flixel.util.FlxSpriteUtil;
+import flixel.FlxSprite;
+
+
 
 class Main extends Sprite
 {
@@ -53,8 +58,83 @@ class Main extends Sprite
 		}
 	}
 
+	//Forever Engine code lol
+	//Gonna give credits in the code because Yoshdubs worked their ass off to make this work.
+	//https://github.com/Yoshubs/Forever-Engine-Legacy
+	#if sys
+	function onErrorEvent(e:UncaughtErrorEvent):Void{
+		var rand:Array<String> = ['"I hate it when my code doesn\'t work!"','"Spongey did it, all him!"','"Worst engine ever! It just crashed on me!"','"Sucks to screw up yer code ain\'t it."','"I\'m surprised someone as small as you didn\'t break anything."','"Vaporeon. Yes."','"That\'s so stupid."'];
+		var errMsg:String = "";
+		var alsoerrMsg:String = "";
+		var path:String;
+		var callStack:Array<StackItem> = CallStack.exceptionStack(true);
+		var dateNow:String = Date.now().toString();
+
+		dateNow = StringTools.replace(dateNow, " ", "_");
+		dateNow = StringTools.replace(dateNow, ":", "'");
+
+		path = "./logs/crashes/" + "crash_" + dateNow + ".txt";
+
+		errMsg += "---- Begin crash stack ----\n";
+		for (stackItem in callStack)
+		{
+			switch (stackItem)
+			{
+				case FilePos(s, file, line, column):
+					errMsg += file + " (line " + line + ")\n";
+				default:
+					Sys.println(stackItem);
+			}
+		}
+		errMsg += "----- End crash stack -----\n";
+
+		errMsg += "\nFATAL Uncaught Error: " + e.error + "\nAustin Engine has crashed due to an error.\nPlease send the error to SylveonDev on discord, or github for help.\nThe stack dump will be saved to:\n"+path;
+		errMsg += '\n' + rand[FlxG.random.int(0,rand.length)];
+		alsoerrMsg += e.error;
+
+		if (!FileSystem.exists("./logs/"))
+			FileSystem.createDirectory("./logs/");
+		if (!FileSystem.exists("./logs/crashes"))
+			FileSystem.createDirectory("./logs/crashes");
+
+		File.saveContent(path, errMsg + "\n");
+
+		File.saveContent('./logs/latestError.txt', alsoerrMsg + "\n");
+		File.saveContent('./logs/latestStack.txt', errMsg + "\n");
+
+		Sys.println(errMsg);
+		Sys.println("Crash dump saved in " + Path.normalize(path));
+
+		var crashDialoguePath:String = "austinCrashDiag";
+
+		#if windows
+		crashDialoguePath += ".exe";
+		#end
+
+		if (FileSystem.exists("./" + crashDialoguePath))
+		{
+			Sys.println("Found crash dialog: " + crashDialoguePath);
+
+			#if linux
+			crashDialoguePath = "./" + crashDialoguePath;
+			#end
+			new Process(crashDialoguePath, [path]);
+		}
+		else
+		{
+			Sys.println("No crash dialog found! Making a simple alert instead...");
+			Application.current.window.alert(errMsg, "Error!");
+		}
+
+		Sys.println("Closing Austin Engine now. Goodbye.");
+		Sys.exit(1);
+	} 
+	#end
+
 	private function init(?E:Event):Void
 	{
+		#if sys Lib.current.loaderInfo.uncaughtErrorEvents.addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, onErrorEvent); #end
+
 		if (hasEventListener(Event.ADDED_TO_STAGE))
 		{
 			removeEventListener(Event.ADDED_TO_STAGE, init);
@@ -62,6 +142,8 @@ class Main extends Sprite
 
 		setupGame();
 	}
+
+	
 
 	private function setupGame():Void
 	{
@@ -84,6 +166,8 @@ class Main extends Sprite
 		initialState = TitleState;
 		ClientPrefs.loadDefaultKeys();
 		#end
+
+		
 	
 		
 		// fuck you, persistent caching stays ON during sex

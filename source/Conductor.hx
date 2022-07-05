@@ -54,7 +54,7 @@ class Conductor
 				return 'shit';
 		}
 	}
-	public static function mapBPMChanges(song:SwagSong)
+	public static function mapBPMChanges(song:SwagSong, ?songMultiplier:Float = 1.0)
 	{
 		bpmChangeMap = [];
 
@@ -81,7 +81,7 @@ class Conductor
 		trace("new BPM map BUDDY " + bpmChangeMap);
 	}
 
-	public static function changeBPM(newBpm:Float)
+	public static function changeBPM(newBpm:Float, ?multi:Float = 1.0)
 	{
 		bpm = newBpm;
 

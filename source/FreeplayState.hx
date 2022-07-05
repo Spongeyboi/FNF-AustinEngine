@@ -14,7 +14,9 @@ import flixel.math.FlxMath;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
 import lime.utils.Assets;
+import flixel.input.keyboard.FlxKey;
 import flixel.system.FlxSound;
 import openfl.utils.Assets as OpenFlAssets;
 import WeekData;
@@ -34,15 +36,24 @@ class FreeplayState extends MusicBeatState
 	var selector:FlxText;
 	private static var curSelected:Int = 0;
 	var curDifficulty:Int = -1;
+	var curSpeed:Float = 1;
 	private static var lastDifficultyName:String = '';
 
 	var scoreBG:FlxSprite;
 	var scoreText:FlxText;
 	var diffText:FlxText;
+	var speedText:FlxText;
+	var daBfIcon:HealthIcon;
+	var curBf:Int = 0;
+	var daBfs:Array<String> = ['bf', 'pico'];
+	var bfText: FlxText;
 	var lerpScore:Int = 0;
 	var lerpRating:Float = 0;
 	var intendedScore:Int = 0;
 	var intendedRating:Float = 0;
+
+	var sidebar:FlxSprite;
+	var sidebarText:FlxText;
 
 	private var grpSongs:FlxTypedGroup<Alphabet>;
 	private var curPlaying:Bool = false;
@@ -53,11 +64,17 @@ class FreeplayState extends MusicBeatState
 	var intendedColor:Int;
 	var colorTween:FlxTween;
 
+	private var debugKeysChart:Array<FlxKey>;
+
+	var posHigh = true;
+
 	override function create()
 	{
 		Paths.clearStoredMemory();
 		Paths.clearUnusedMemory();
 		
+		debugKeysChart = ClientPrefs.copyKey(ClientPrefs.keyBinds.get('debug_1'));
+
 		persistentUpdate = true;
 		PlayState.isStoryMode = false;
 		WeekData.reloadWeekFiles(false);
@@ -158,7 +175,7 @@ class FreeplayState extends MusicBeatState
 		scoreText = new FlxText(FlxG.width * 0.7, 5, 0, "", 32);
 		scoreText.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, RIGHT);
 
-		scoreBG = new FlxSprite(scoreText.x - 6, 0).makeGraphic(1, 66, 0xFF000000);
+		scoreBG = new FlxSprite(scoreText.x - 6, 0).makeGraphic(1, Std.int(FlxG.height / 3), 0xFF000000);
 		scoreBG.alpha = 0.6;
 		add(scoreBG);
 
@@ -166,7 +183,51 @@ class FreeplayState extends MusicBeatState
 		diffText.font = scoreText.font;
 		add(diffText);
 
+		curSpeed = FlxMath.roundDecimal(curSpeed, 2);
+
+		//Basically just me (sylveondev) improving Leather Engine code in the stupidest way possible.
+		//https://github.com/Leather128/LeatherEngine
+		speedText = new FlxText(scoreText.x, scoreText.y + (36 * 2), 0, "", 24);
+		speedText.font = scoreText.font;
+		add(speedText);
+
+		if(curSpeed < 0.25)
+			curSpeed = 0.25;
+		
+		//Html5 users can't change the song speed. 
+		//Probably supported but I'm too lazy to check.
+		//Not like anyone is gonna use html5 anyways.
+		#if !sys
+		curSpeed = 1;
+		speedText.text = 'Shift + < Speed: ' + curSpeed + ' >';
+		#else
+		speedText.text = "";
+		#end
+
+		
+
+		
+
 		add(scoreText);
+
+		sidebarText = new FlxText(FlxG.width * 0.7, (FlxG.height / 3) + 6, 512, "[enter] Load song\n\n"+
+		#if PRELOAD_ALL "[SPACE] Play song\n\n"+#end"[CTRL] Gameplay Changers\n\n[RESET] Reset score\n\n"+
+		"[7] Chart editor", 48);
+		sidebarText.setFormat(Paths.font("vcr.ttf"), 26, FlxColor.WHITE, RIGHT);
+		sidebarText.scrollFactor.set();
+		sidebar = new FlxSprite(scoreText.x - 6, (FlxG.height / 3)).makeGraphic(1, 256, 0xFF000000);
+		sidebar.alpha = 0;
+		sidebarText.alpha = 0;
+		sidebar.visible = false;
+		sidebarText.visible = false;
+		add(sidebar);
+		add(sidebarText);
+
+		daBfIcon = new HealthIcon('bf', false);
+		daBfIcon.setGraphicSize(150,150);
+		daBfIcon.x = scoreText.x;
+		daBfIcon.y = scoreText.y + (36 * 2.5);
+		add(daBfIcon);
 
 		if(curSelected >= songs.length) curSelected = 0;
 		bg.color = songs[curSelected].color;
@@ -180,6 +241,7 @@ class FreeplayState extends MusicBeatState
 		
 		changeSelection();
 		changeDiff();
+		changeSpeed();
 
 		var swag:Alphabet = new Alphabet(1, 0, "swag");
 
@@ -202,7 +264,7 @@ class FreeplayState extends MusicBeatState
 
 		var textBG:FlxSprite = new FlxSprite(0, FlxG.height - 26).makeGraphic(FlxG.width, 26, 0xFF000000);
 		textBG.alpha = 0.6;
-		add(textBG);
+		//add(textBG);
 
 		#if PRELOAD_ALL
 		var leText:String = "Press SPACE to listen to the Song / Press CTRL to open the Gameplay Changers Menu / Press RESET to Reset your Score and Accuracy.";
@@ -214,7 +276,13 @@ class FreeplayState extends MusicBeatState
 		var text:FlxText = new FlxText(textBG.x, textBG.y + 4, FlxG.width, leText, size);
 		text.setFormat(Paths.font("vcr.ttf"), size, FlxColor.WHITE, RIGHT);
 		text.scrollFactor.set();
-		add(text);
+		//add(text);
+
+		positionHighscore();
+
+		var dasbx = sidebarText.x;
+		var dasbtxtx = sidebarText.x;
+
 		super.create();
 	}
 
@@ -279,15 +347,22 @@ class FreeplayState extends MusicBeatState
 
 		scoreText.text = 'PERSONAL BEST: ' + lerpScore + ' (' + ratingSplit.join('.') + '%)';
 		positionHighscore();
-
 		var upP = controls.UI_UP_P;
 		var downP = controls.UI_DOWN_P;
 		var accepted = controls.ACCEPT;
+		var tab =  FlxG.keys.justPressed.TAB;
 		var space = FlxG.keys.justPressed.SPACE;
 		var ctrl = FlxG.keys.justPressed.CONTROL;
+		var charting = FlxG.keys.anyJustPressed(debugKeysChart);
 
 		var shiftMult:Int = 1;
-		if(FlxG.keys.pressed.SHIFT) shiftMult = 3;
+		var holdingShift = false;
+		
+		//If holding shift, enable the holdingShift flag so you change the song speed instead of difficulty.
+		if(FlxG.keys.pressed.SHIFT){
+			shiftMult = 3;
+			holdingShift = true;
+		}
 
 		if(songs.length > 1)
 		{
@@ -315,19 +390,28 @@ class FreeplayState extends MusicBeatState
 				}
 			}
 		}
-
-		if (controls.UI_LEFT_P)
-			changeDiff(-1);
-		else if (controls.UI_RIGHT_P)
-			changeDiff(1);
-		else if (upP || downP) changeDiff();
-
+		if (!holdingShift){
+			if (controls.UI_LEFT_P)
+				changeDiff(-1);
+			else if (controls.UI_RIGHT_P)
+				changeDiff(1);
+			else if (upP || downP) changeDiff();
+		}else{
+			if (controls.UI_LEFT_P)
+				changeSpeed(-0.25);
+			else if (controls.UI_RIGHT_P)
+				changeSpeed(0.25);
+		}
+		if (tab){
+			changeBF(1);
+		}
 		if (controls.BACK)
 		{
 			persistentUpdate = false;
 			if(colorTween != null) {
 				colorTween.cancel();
 			}
+			destroyFreeplayVocals();
 			FlxG.sound.play(Paths.sound('cancelMenu'));
 			MusicBeatState.switchState(new MainMenuState());
 		}
@@ -359,6 +443,17 @@ class FreeplayState extends MusicBeatState
 				vocals.looped = true;
 				vocals.volume = 0.7;
 				instPlaying = curSelected;
+				//This dumb piece of crap code will make the pitch of the da song higher if the music is playing
+				#if cpp
+				@:privateAccess
+				{
+					if(FlxG.sound.music.active && FlxG.sound.music.playing)
+						lime.media.openal.AL.sourcef(FlxG.sound.music._channel.__source.__backend.handle, lime.media.openal.AL.PITCH, curSpeed);
+
+					if (vocals.active && vocals.playing)
+						lime.media.openal.AL.sourcef(vocals._channel.__source.__backend.handle, lime.media.openal.AL.PITCH, curSpeed);
+				}
+				#end
 				#end
 			}
 		}
@@ -388,17 +483,42 @@ class FreeplayState extends MusicBeatState
 				colorTween.cancel();
 			}
 			
-			if (FlxG.keys.pressed.SHIFT){
-				LoadingState.loadAndSwitchState(new ChartingState());
-			}else{
-				LoadingState.loadAndSwitchState(new PlayState());
-			}
+			LoadingState.loadAndSwitchState(new PlayState());
 
 			FlxG.sound.music.volume = 0;
 					
 			destroyFreeplayVocals();
-		}
-		else if(controls.RESET)
+		}else if(charting){
+			persistentUpdate = false;
+			var songLowercase:String = Paths.formatToSongPath(songs[curSelected].songName);
+			var poop:String = Highscore.formatSong(songLowercase, curDifficulty);
+			/*#if MODS_ALLOWED
+			if(!sys.FileSystem.exists(Paths.modsJson(songLowercase + '/' + poop)) && !sys.FileSystem.exists(Paths.json(songLowercase + '/' + poop))) {
+			#else
+			if(!OpenFlAssets.exists(Paths.json(songLowercase + '/' + poop))) {
+			#end
+				poop = songLowercase;
+				curDifficulty = 1;
+				trace('Couldnt find file');
+			}*/
+			trace(poop);
+
+			PlayState.SONG = Song.loadFromJson(poop, songLowercase);
+			PlayState.isStoryMode = false;
+			PlayState.storyDifficulty = curDifficulty;
+			PlayState.chartingMode = true;
+
+			trace('CURRENT WEEK: ' + WeekData.getWeekFileName());
+			if(colorTween != null) {
+				colorTween.cancel();
+			}
+			
+			LoadingState.loadAndSwitchState(new ChartingState());
+
+			FlxG.sound.music.volume = 0;
+					
+			destroyFreeplayVocals();
+		}else if(controls.RESET)
 		{
 			persistentUpdate = false;
 			openSubState(new ResetScoreSubState(songs[curSelected].songName, curDifficulty, songs[curSelected].songCharacter));
@@ -434,6 +554,31 @@ class FreeplayState extends MusicBeatState
 		PlayState.storyDifficulty = curDifficulty;
 		diffText.text = '< ' + CoolUtil.difficultyString() + ' >';
 		positionHighscore();
+	}
+	
+	function changeSpeed(change:Float = 0) {
+		#if sys
+		curSpeed += change;
+		if (curSpeed < 0.25) curSpeed = 0.25;
+		if (curSpeed > 10) curSpeed = 10;
+
+		speedText.text = 'Shift + < Speed: ' + curSpeed + ' >';
+
+		PlayState.leatherSongSpeed = curSpeed;
+
+		//This dumb piece of crap code will make the pitch of the da song higher if the music is playing
+		//Oh shit, Leather Engine but Psych Engine! Duolingo is holding my family hostage.
+		#if cpp
+		@:privateAccess
+		{
+			if(vocals != null && FlxG.sound.music.active && FlxG.sound.music.playing)
+				lime.media.openal.AL.sourcef(FlxG.sound.music._channel.__source.__backend.handle, lime.media.openal.AL.PITCH, curSpeed);
+
+			if (vocals != null && vocals.active && vocals.playing)
+				lime.media.openal.AL.sourcef(vocals._channel.__source.__backend.handle, lime.media.openal.AL.PITCH, curSpeed);
+		}
+		#end
+		#end
 	}
 
 	function changeSelection(change:Int = 0, playSound:Bool = true)
@@ -533,6 +678,62 @@ class FreeplayState extends MusicBeatState
 		{
 			curDifficulty = newPos;
 		}
+
+		changeBF();
+	}
+
+	function changeBF(change:Int = 0) {
+
+		curBf += change;
+
+		var foundFile:Bool = false;
+		var fileName:String = #if MODS_ALLOWED Paths.modFolders('data/' + songs[curSelected].songName.toLowerCase().replace(' ', '-') + '/chars.txt'); #else ''; #end
+		#if MODS_ALLOWED
+		trace(fileName);
+		if(FileSystem.exists(fileName)) {
+			foundFile = true;
+			trace('Found the bf');
+		}else{
+			trace('Not found in mods folder.');
+		}
+		#end
+
+		var foundbfs:Array<String>;
+
+		if(!foundFile) {
+			fileName = Paths.txt(Paths.formatToSongPath(songs[curSelected].songName) + '/' + 'chars');
+			trace(fileName);
+			#if sys
+			if(FileSystem.exists(fileName)) {
+			#else
+			if(OpenFlAssets.exists(fileName)) {
+			#end
+				foundFile = true;
+				trace('Found the bf');
+			}
+		}
+		if (foundFile == true) {
+			foundbfs = CoolUtil.coolTextFile(fileName);
+			daBfs = foundbfs;
+			PlayState.charChangeEnabled = true;
+		}else{
+			trace('No bf chars found. Using chart\'s default');
+			var poop:String = Highscore.formatSong(songs[curSelected].songName, curDifficulty);
+			daBfs = [Song.loadFromJson(poop, songs[curSelected].songName).player1.toLowerCase()];
+			PlayState.charChangeEnabled = false;
+		}
+
+		//Run a check to see if the cur bf pos surpasses the new bfs length.
+		if (curBf < 0) curBf = daBfs.length;
+		if (curBf > daBfs.length) curBf = 0;
+
+		trace('The selected BF is now: "' + daBfs[curBf] + '"');
+
+		//Attempt to load character's icon.
+		//Destroy it after afterwards.
+		var lebf = Character.getIconFromCharacter(daBfs[curBf]);
+		daBfIcon.changeIcon(lebf);
+		PlayState.chosenBF = daBfs[curBf];
 	}
 
 	private function positionHighscore() {
@@ -542,6 +743,32 @@ class FreeplayState extends MusicBeatState
 		scoreBG.x = FlxG.width - (scoreBG.scale.x / 2);
 		diffText.x = Std.int(scoreBG.x + (scoreBG.width / 2));
 		diffText.x -= diffText.width / 2;
+		speedText.x = Std.int(scoreBG.x + (scoreBG.width / 2));
+		speedText.x -= speedText.width / 2;
+		sidebar.scale.x = FlxG.width - scoreText.x + 6;
+
+		daBfIcon.x = scoreText.x - 46;
+		
+		if (posHigh){
+			if (sidebar.alpha == 0 && sidebar.visible == false){
+				sidebar.x = FlxG.width - (sidebar.scale.x / 2);
+				posHigh = false;
+				sidebar.visible = true;
+				sidebarText.visible = true;
+				sidebarText.x = FlxG.width + 306;
+				sidebar.x = FlxG.width + 306;
+				FlxTween.tween(sidebar,{x: FlxG.width - (scoreBG.scale.x * 6.8)},2,{ease:FlxEase.elasticOut ,startDelay:0.5,onComplete:function(twn:FlxTween){
+					posHigh = true;
+				}});
+				FlxTween.tween(sidebar,{alpha: 0.6},2,{ease:FlxEase.quadOut, startDelay:0.5});
+				FlxTween.tween(sidebarText,{alpha: 1},2,{ease:FlxEase.quadOut,startDelay:2.5});
+			}else{
+				sidebarText.x = FlxG.width - scoreText.width - 64;
+
+				sidebar.scale.x = FlxG.width - scoreText.x + 6;
+				sidebar.x = FlxG.width - (sidebar.scale.x / 2);
+			}
+		}
 	}
 }
 

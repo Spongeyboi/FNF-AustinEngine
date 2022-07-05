@@ -24,6 +24,7 @@
 	"gameplay":{
 		"gfEnabled":true,
 		"watermark":true,
-		"watermarkText":"Austin Engine"
+		"watermarkText":"Austin Engine",
+		"comboSprite":true
 	}
 }

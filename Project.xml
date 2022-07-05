@@ -43,15 +43,20 @@
 
 
 	<classpath name="source" />
+
+	<!-- AUSTIN ENGINE CRASH HANDLING-->
+	<assets path="austinCrashDiag.exe" type="template" if="windows" />
+	<haxedef name="HXCPP_CHECK_POINTER" if="desktop" />
+	<haxedef name="HXCPP_STACK_LINE" if="desktop" />
 	
-	<!-- PSYCH ENGINE CUSTOMIZATION -->
-	<define name="MODS_ALLOWED" if="desktop" />
-	<define name="LUA_ALLOWED" if="desktop" />
-	<define name="ACHIEVEMENTS_ALLOWED" />
-	<define name="VIDEOS_ALLOWED" if="web || windows" unless="32bits"/>
+	<!-- AUSTIN ENGINE CUSTOMIZATION -->
+	<define name="MODS_ALLOWED" if="desktop" /> <!-- Delete this to remove lua mods from your mod --> 
+	<define name="HSCRIPT_ALLOWED" if="desktop" /> <!-- Delete this to remove hscript support --> 
+	<define name="LUA_ALLOWED" if="desktop" /> <!-- Delete this to remove lua support --> 
+	<define name="ACHIEVEMENTS_ALLOWED" /> <!-- Delete this if you don't want achivements, asshole -->
+	<define name="VIDEOS_ALLOWED" if="web || windows" unless="32bits"/> <!-- Delete this if you don't want videos to run -->
 	<define name="PSYCH_WATERMARKS"/> <!-- DELETE THIS TO REMOVE WATERMARKS/DEV NAMES ON TITLE SCREEN -->
 	<define name="TITLE_SCREEN_EASTER_EGG" if="officialBuild"/> <!-- DELETE THE if="officialBuild" for enabling this on an unofficial build -->
-	
 	
 	<assets path="assets/preload" rename="assets" exclude="*.ogg" if="web"/>
 	<assets path="assets/preload" rename="assets" exclude="*.mp3"  unless="web"/>

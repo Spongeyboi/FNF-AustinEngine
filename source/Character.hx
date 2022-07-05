@@ -79,6 +79,36 @@ class Character extends FlxSprite
 	public var healthColorArray:Array<Int> = [255, 0, 0];
 
 	public static var DEFAULT_CHARACTER:String = 'bf'; //In case a character is missing, it will use BF on its place
+	
+	public static function getIconFromCharacter(character:String = 'bf'){
+		var characterPath:String = 'characters/' + character + '.json';
+
+				#if MODS_ALLOWED
+				var path:String = Paths.modFolders(characterPath);
+				if (!FileSystem.exists(path)) {
+					path = Paths.getPreloadPath(characterPath);
+				}
+
+				if (!FileSystem.exists(path))
+				#else
+				var path:String = Paths.getPreloadPath(characterPath);
+				if (!Assets.exists(path))
+				#end
+				{
+					path = Paths.getPreloadPath('characters/' + DEFAULT_CHARACTER + '.json'); //If a character couldn't be found, change him to BF just to prevent a crash
+				}
+
+				#if MODS_ALLOWED
+				var rawJson = File.getContent(path);
+				#else
+				var rawJson = Assets.getText(path);
+				#end
+
+				var json:CharacterFile = cast Json.parse(rawJson);
+
+				return(json.healthicon);
+	}
+
 	public function new(x:Float, y:Float, ?character:String = 'bf', ?isPlayer:Bool = false)
 	{
 		super(x, y);

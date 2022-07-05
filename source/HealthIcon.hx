@@ -29,9 +29,15 @@ class HealthIcon extends FlxSprite
 			setPosition(sprTracker.x + sprTracker.width + 10, sprTracker.y - 30);
 	}
 
-	public function swapOldIcon() {
-		if(isOldIcon = !isOldIcon) changeIcon('bf-old');
-		else changeIcon('bf');
+	public function swapOldIcon(char:String) {
+		var dachar = Character.getIconFromCharacter(char);
+		if (dachar == null) return;
+		var name:String = 'icons/'+ dachar;
+		if(!Paths.fileExists('images/' + name + '-old.png', IMAGE)) name = 'icons/icon-' + dachar; //Imagine how hard this gotta be
+		if(Paths.fileExists('images/' + name + '-old.png', IMAGE)){
+			if(isOldIcon = !isOldIcon) changeIcon(dachar+'-old');
+			else changeIcon(dachar);
+		}; //There's an old icon
 	}
 
 	private var iconOffsets:Array<Float> = [0, 0];
@@ -42,13 +48,25 @@ class HealthIcon extends FlxSprite
 			if(!Paths.fileExists('images/' + name + '.png', IMAGE)) name = 'icons/icon-face'; //Prevents crash from missing icon
 			var file:Dynamic = Paths.image(name);
 
-			loadGraphic(file); //Load stupidly first for getting the file size
-			loadGraphic(file, true, Math.floor(width / 2), Math.floor(height)); //Then load it fr
-			iconOffsets[0] = (width - 150) / 2;
-			iconOffsets[1] = (width - 150) / 2;
-			updateHitbox();
+			var winningIcon:Bool;
 
-			animation.add(char, [0, 1], 0, false, isPlayer);
+			loadGraphic(file); //Load stupidly first for getting the file size
+			
+			//This is for determining if the icon has a winning icon
+			//We'll floor the icon sizes so abnormally sized icons will not fail the algorithm and cause problems. 
+			switch(Math.floor(width) / Math.floor(height)){
+				case 3:
+					trace('Winning icon enabled for '+char);
+					winningIcon = true;
+				default:
+					winningIcon = false;
+			}
+			loadGraphic(file, true, Math.floor(width / (winningIcon ? 3 : 2)), Math.floor(height)); //Then load it fr
+			iconOffsets[0] = (width - 150) / (winningIcon ? 3 : 2);
+			iconOffsets[1] = (width - 150) / (winningIcon ? 3 : 2);
+			updateHitbox();
+			
+			animation.add(char, winningIcon ? [0, 1, 2] : [0, 1], 0, false, isPlayer);
 			animation.play(char);
 			this.char = char;
 

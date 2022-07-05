@@ -164,6 +164,13 @@ class TitleState extends MusicBeatState
 
 		// IGNORE THIS!!!
 
+		// Create a white circle to use as a cursor graphic
+		var dacursor = new FlxSprite(0, 0).loadGraphic(Paths.image('ui/cursor'));
+		dacursor.setGraphicSize(15,15);
+
+		// Load the sprite's graphic to the cursor
+		FlxG.mouse.load(dacursor.pixels);
+
 		austinJson = AustinData.get();
 		if (austinJson != null){
 			trace('AustinData found');
