@@ -39,10 +39,10 @@ typedef AustinJSON =
 		Youtube:String,
 	},
 	gameplay:{
-		gfEnabled:Bool,
         watermark:Bool,
         watermarkText:String,
-        comboSprite:Bool
+        comboSprite:Bool,
+		ratings:Array<Dynamic>
 	}
 }
 
@@ -53,7 +53,7 @@ class AustinData {
         #if sys
 		if(FileSystem.exists(fileName)) {
 		#else
-		if(OpenFlAssets.exists(fileName)) {
+		if(Assets.exists(fileName)) {
 		#end
 			foundFile = true;
 		}

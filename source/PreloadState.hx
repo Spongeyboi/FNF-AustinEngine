@@ -60,12 +60,18 @@ class PreloadState extends MusicBeatState
 
 		bitmapData = new Map<String,FlxGraphic>();
 
-        bg = new FlxSprite();
-		bg.loadGraphic(Paths.image('preloader'));
-        bg.scale.set(FlxG.height,FlxG.width);
+		bg = new FlxSprite();
+		bg.makeGraphic(Std.int(FlxG.height),Std.int(FlxG.width),FlxColor.BLACK);
         bg.screenCenter();
         bg.updateHitbox();
 		add(bg);
+
+        var austinLogo = new FlxSprite();
+		austinLogo.loadGraphic(Paths.image('austinLogo'));
+		austinLogo.scale.set(0.5,0.5);
+        austinLogo.screenCenter();
+        austinLogo.updateHitbox();
+		//add(austinLogo);
 
 		text = new FlxText(FlxG.width / 2, FlxG.height / 2 + 300,0,"Preparing to Preload...");
 		text.size = 16;
@@ -77,20 +83,16 @@ class PreloadState extends MusicBeatState
 		
 
 		#if cpp
-		if (FlxG.save.data.cacheImages)
-		{
-			trace("caching images...");
+		trace("caching images...");
 
-			for (i in FileSystem.readDirectory(FileSystem.absolutePath("assets/shared/images/characters")))
-			{
-				if (!i.endsWith(".png"))
-					continue;
-				images.push(i);
-			}
+		for (i in FileSystem.readDirectory(FileSystem.absolutePath("assets/shared/images/characters")))
+		{
+			if (!i.endsWith(".png"))
+				continue;
+			images.push(i);
 		}
 
-		trace("caching music...");
-        /*
+		/* trace("caching music...");
 		for (i in FileSystem.readDirectory(FileSystem.absolutePath("assets/songs")))
 		{
 			music.push(i);
@@ -118,7 +120,7 @@ class PreloadState extends MusicBeatState
 				if (toBeDone != 0 && done != toBeDone)
 					{
 						
-						text.text = "Preloading.. (" + done + "/" + toBeDone + ") assets done";
+						text.text = "Preloading (" + done + "/" + toBeDone + ") assets";
 					}
 			}
 		

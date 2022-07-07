@@ -41,6 +41,7 @@ class ModsMenuState extends MusicBeatState
 	var mods:Array<ModMetadata> = [];
 	static var changedAThing = false;
 	var bg:FlxSprite;
+	var modbg:FlxSprite;
 	var intendedColor:Int;
 	var colorTween:FlxTween;
 	
@@ -78,10 +79,23 @@ class ModsMenuState extends MusicBeatState
 		DiscordClient.changePresence("In the Menus", null);
 		#end
 
+		
+
 		bg = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
 		bg.antialiasing = ClientPrefs.globalAntialiasing;
 		add(bg);
 		bg.screenCenter();
+
+		modbg = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
+		modbg.antialiasing = ClientPrefs.globalAntialiasing;
+		add(modbg);
+		modbg.screenCenter();
+
+		var blackbg = new FlxSprite().makeGraphic(Std.int(FlxG.height / 2), Std.int(FlxG.width), FlxColor.BLACK);
+		blackbg.antialiasing = ClientPrefs.globalAntialiasing;
+		//add(blackbg);
+		blackbg.screenCenter(X);
+		blackbg.y += FlxG.height / 2;
 
 		var austinJson:AustinJSON = AustinData.get();
 		var bgOverlay = new FlxBackdrop(Paths.image('menubgOverlay'), 0.2, 0, true, true);
@@ -381,6 +395,8 @@ class ModsMenuState extends MusicBeatState
 			bg.color = defaultColor;
 		else
 			bg.color = mods[curSelected].color;
+			modbg.color = defaultColor;
+
 
 		intendedColor = bg.color;
 		changeSelection();
@@ -563,7 +579,13 @@ class ModsMenuState extends MusicBeatState
 				colorTween.cancel();
 			}
 			intendedColor = newColor;
+			FlxTween.cancelTweensOf(modbg);
 			colorTween = FlxTween.color(bg, 1, bg.color, intendedColor, {
+				onComplete: function(twn:FlxTween) {
+					colorTween = null;
+				}
+			});
+			FlxTween.color(modbg, 1, modbg.color, intendedColor, {
 				onComplete: function(twn:FlxTween) {
 					colorTween = null;
 				}
@@ -583,6 +605,17 @@ class ModsMenuState extends MusicBeatState
 					descriptionTxt.text += " (This Mod will restart the game!)";
 				}
 
+				modbg.visible = false;
+				var loadedMenu:BitmapData = null;
+				var bgToUse:String = Paths.mods(modsList[i][0] + '/splash.png');
+				if(FileSystem.exists(bgToUse))
+				{
+					loadedMenu = BitmapData.fromFile(bgToUse);
+				}if (loadedMenu != null){
+					modbg.loadGraphic(loadedMenu);
+					modbg.visible = true;
+				}
+
 				// correct layering
 				var stuffArray:Array<FlxSprite> = [/*removeButton, installButton,*/ selector, descriptionTxt, mod.alphabet, mod.icon];
 				for (obj in stuffArray)
@@ -596,6 +629,7 @@ class ModsMenuState extends MusicBeatState
 					insert(members.length, obj);
 				}
 			}
+			
 			i++;
 		}
 		updateButtonToggle();

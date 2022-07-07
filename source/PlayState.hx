@@ -93,18 +93,7 @@ class PlayState extends MusicBeatState
 	public static var STRUM_X = 42;
 	public static var STRUM_X_MIDDLESCROLL = -278;
 
-	public static var ratingStuff:Array<Dynamic> = [
-		['You Suck!', 0.2], //From 0% to 19%
-		['Shit', 0.4], //From 20% to 39%
-		['Bad', 0.5], //From 40% to 49%
-		['Bruh', 0.6], //From 50% to 59%
-		['Meh', 0.69], //From 60% to 68%
-		['Nice', 0.7], //69%
-		['Good', 0.8], //From 70% to 79%
-		['Great', 0.9], //From 80% to 89%
-		['Sick!', 1], //From 90% to 99%
-		['Perfect!!', 1] //The value on this one isn't used actually, since Perfect is always "1"
-	];
+	public static var ratingStuff:Array<Dynamic> = AustinData.get().gameplay.ratings;
 	public var modchartTweens:Map<String, FlxTween> = new Map<String, FlxTween>();
 	public var modchartSprites:Map<String, ModchartSprite> = new Map<String, ModchartSprite>();
 	public var modchartTimers:Map<String, FlxTimer> = new Map<String, FlxTimer>();
@@ -260,6 +249,7 @@ class PlayState extends MusicBeatState
 	var scoreTxtTween:FlxTween;
 
 	var allNotesMs:Float = 0;
+	var msTiming:Float = 0;
 	var averageMs:Float = 0;
 
 	public var poisonTxt:FlxText;
@@ -881,7 +871,7 @@ class PlayState extends MusicBeatState
 			SONG.gfVersion = gfVersion; //Fix for the Chart Editor
 		}
 
-		if (!stageData.hide_girlfriend || austinJson.gameplay.gfEnabled != false)
+		if (!stageData.hide_girlfriend)
 		{
 			gf = new Character(0, 0, gfVersion);
 			startCharacterPos(gf);
@@ -3801,7 +3791,7 @@ class PlayState extends MusicBeatState
 		rating.x += ClientPrefs.comboOffset[0];
 		rating.y -= ClientPrefs.comboOffset[1];
 
-		var msTiming = HelperFunctions.truncateFloat(noteDiff, 3);
+		msTiming = HelperFunctions.truncateFloat(noteDiff, 3);
 			if(cpuControlled) msTiming = 0;		
 			
 
@@ -4397,6 +4387,9 @@ class PlayState extends MusicBeatState
 			var isSus:Bool = note.isSustainNote; //GET OUT OF MY HEAD, GET OUT OF MY HEAD, GET OUT OF MY HEAD
 			var leData:Int = Math.round(Math.abs(note.noteData));
 			var leType:String = note.noteType;
+
+			setOnLuas('averageMs',averageMs);
+			setOnLuas('noteHitMs',msTiming);
 			callOnLuas('goodNoteHit', [notes.members.indexOf(note), leData, leType, isSus]);
 
 			if (!note.isSustainNote)

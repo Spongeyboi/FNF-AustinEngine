@@ -41,6 +41,7 @@ class FreeplayState extends MusicBeatState
 
 	var scoreBG:FlxSprite;
 	var scoreText:FlxText;
+	var changeBfText:FlxText;
 	var diffText:FlxText;
 	var speedText:FlxText;
 	var daBfIcon:HealthIcon;
@@ -228,6 +229,11 @@ class FreeplayState extends MusicBeatState
 		daBfIcon.x = scoreText.x;
 		daBfIcon.y = scoreText.y + (36 * 2.5);
 		add(daBfIcon);
+
+		changeBfText = new FlxText(scoreText.x, scoreText.y + (36 * 4), 512, "[TAB] Change BF", 48);
+		changeBfText.setFormat(Paths.font("vcr.ttf"), 26, FlxColor.WHITE, LEFT);
+		changeBfText.scrollFactor.set();
+		add(changeBfText);
 
 		if(curSelected >= songs.length) curSelected = 0;
 		bg.color = songs[curSelected].color;
@@ -713,10 +719,12 @@ class FreeplayState extends MusicBeatState
 			}
 		}
 		if (foundFile == true) {
+			changeBfText.text = "[TAB] Change BF";
 			foundbfs = CoolUtil.coolTextFile(fileName);
 			daBfs = foundbfs;
 			PlayState.charChangeEnabled = true;
 		}else{
+			changeBfText.text = "[ / ] Disabled";
 			trace('No bf chars found. Using chart\'s default');
 			var poop:String = Highscore.formatSong(songs[curSelected].songName, curDifficulty);
 			daBfs = [Song.loadFromJson(poop, songs[curSelected].songName).player1.toLowerCase()];
@@ -734,6 +742,7 @@ class FreeplayState extends MusicBeatState
 		var lebf = Character.getIconFromCharacter(daBfs[curBf]);
 		daBfIcon.changeIcon(lebf);
 		PlayState.chosenBF = daBfs[curBf];
+		changeBfText.text += '\nSelected: '+daBfs[curBf];
 	}
 
 	private function positionHighscore() {
@@ -748,20 +757,24 @@ class FreeplayState extends MusicBeatState
 		sidebar.scale.x = FlxG.width - scoreText.x + 6;
 
 		daBfIcon.x = scoreText.x - 46;
+		changeBfText.x = Std.int(scoreBG.x + (scoreBG.width / 2));
+		changeBfText.x -= changeBfText.width / 4;
 		
 		if (posHigh){
 			if (sidebar.alpha == 0 && sidebar.visible == false){
 				sidebar.x = FlxG.width - (sidebar.scale.x / 2);
-				posHigh = false;
+				//posHigh = false;
 				sidebar.visible = true;
 				sidebarText.visible = true;
 				sidebarText.x = FlxG.width + 306;
 				sidebar.x = FlxG.width + 306;
-				FlxTween.tween(sidebar,{x: FlxG.width - (scoreBG.scale.x * 6.8)},2,{ease:FlxEase.elasticOut ,startDelay:0.5,onComplete:function(twn:FlxTween){
+				sidebar.alpha = 0.6;
+				sidebarText.alpha = 1;
+				/*FlxTween.tween(sidebar,{x: FlxG.width - (scoreBG.scale.x * 6.8)},2,{ease:FlxEase.elasticOut ,startDelay:0.5,onComplete:function(twn:FlxTween){
 					posHigh = true;
 				}});
 				FlxTween.tween(sidebar,{alpha: 0.6},2,{ease:FlxEase.quadOut, startDelay:0.5});
-				FlxTween.tween(sidebarText,{alpha: 1},2,{ease:FlxEase.quadOut,startDelay:2.5});
+				FlxTween.tween(sidebarText,{alpha: 1},2,{ease:FlxEase.quadOut,startDelay:2.5});*/
 			}else{
 				sidebarText.x = FlxG.width - scoreText.width - 64;
 
