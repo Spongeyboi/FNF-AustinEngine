@@ -48,7 +48,7 @@ class VisualsUISubState extends BaseOptionsMenu
 			false);
 		addOption(option);
 		
-		var option:Option = new Option('Time Bar:',
+		var option:Option = new Option('Time Bar',
 			"What should the Time Bar display?",
 			'timeBarType',
 			'string',
@@ -56,7 +56,7 @@ class VisualsUISubState extends BaseOptionsMenu
 			['Song name and Time Left','Time Left', 'Time Elapsed and Total time', 'Time Elapsed', 'Song Name', 'Disabled']);
 		addOption(option);
 
-		var option:Option = new Option('Health Icon Style:',
+		var option:Option = new Option('Health Icon Style',
 			"What health icon style do you want.\nThere are a lot of them.",
 			'iconStyle',
 			'string',
@@ -67,6 +67,20 @@ class VisualsUISubState extends BaseOptionsMenu
 		var option:Option = new Option('Flashing Lights',
 			"Uncheck this if you're sensitive to flashing lights!",
 			'flashing',
+			'bool',
+			true);
+		addOption(option);
+
+		var option:Option = new Option('Shaders',
+			"Checking this will enable shaders.\nThe shaders in the engine may trigger some people.\nUncheck if you're sensitive to flashing lights!",
+			'shaders',
+			'bool',
+			true);
+		addOption(option);
+
+		var option:Option = new Option('Screen shaking',
+			"Disabling this will disable screen shaking. Finally,\nyou can play Mouse.avi without the screen shaking.",
+			'shaking',
 			'bool',
 			true);
 		addOption(option);

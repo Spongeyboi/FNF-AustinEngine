@@ -119,16 +119,20 @@ class Main extends Sprite
 			#if linux
 			crashDialoguePath = "./" + crashDialoguePath;
 			#end
-			new Process(crashDialoguePath, [path]);
+			var crasher = new Process(crashDialoguePath, [path]);
+			crasher.exitCode();
+			Sys.println("Closing Austin Engine now. Goodbye.");
+			Sys.exit(1);
 		}
 		else
 		{
 			Sys.println("No crash dialog found! Making a simple alert instead...");
 			Application.current.window.alert(errMsg, "Error!");
+			Sys.println("Closing Austin Engine now. Goodbye.");
+			Sys.exit(1);
 		}
 
-		Sys.println("Closing Austin Engine now. Goodbye.");
-		Sys.exit(1);
+		
 	} 
 	#end
 

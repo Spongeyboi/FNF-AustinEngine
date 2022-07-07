@@ -63,7 +63,7 @@ class GameplaySettingsSubState extends BaseOptionsMenu
 			true);
 		addOption(option);
 
-		var option:Option = new Option('Input System:',
+		var option:Option = new Option('Input System',
 			"What input system you want.\nAustin: Frame based input system.\nPsych: Millisecond Input, aka ShadowMario's middle finger,\nthe trashiest input system in the game.",
 			'inputSystem',
 			'string',
@@ -102,7 +102,7 @@ class GameplaySettingsSubState extends BaseOptionsMenu
 		addOption(option);
 
 		var option:Option = new Option('Sick! Hit Window',
-			'Changes the amount of time you have\nfor hitting a "Sick!" in milliseconds.',
+			'Not compatible with the Austin input system!!!\nChanges the amount of time you have\nfor hitting a "Sick!" in milliseconds.',
 			'sickWindow',
 			'int',
 			45);
@@ -113,7 +113,7 @@ class GameplaySettingsSubState extends BaseOptionsMenu
 		addOption(option);
 
 		var option:Option = new Option('Good Hit Window',
-			'Changes the amount of time you have\nfor hitting a "Good" in milliseconds.',
+			'Not compatible with the Austin input system!!!\nChanges the amount of time you have\nfor hitting a "Good" in milliseconds.',
 			'goodWindow',
 			'int',
 			90);
@@ -124,7 +124,7 @@ class GameplaySettingsSubState extends BaseOptionsMenu
 		addOption(option);
 
 		var option:Option = new Option('Bad Hit Window',
-			'Changes the amount of time you have\nfor hitting a "Bad" in milliseconds.',
+			'Not compatible with the Austin input system!!!\nChanges the amount of time you have\nfor hitting a "Bad" in milliseconds.',
 			'badWindow',
 			'int',
 			135);
@@ -135,7 +135,7 @@ class GameplaySettingsSubState extends BaseOptionsMenu
 		addOption(option);
 
 		var option:Option = new Option('Safe Frames',
-			'Changes how many frames you have for\nhitting a note earlier or late.',
+			'Not compatible with the Austin input system!!!\nChanges how many frames you have for\nhitting a note earlier or late.',
 			'safeFrames',
 			'float',
 			10);

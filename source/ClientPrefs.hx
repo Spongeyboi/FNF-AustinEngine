@@ -23,6 +23,8 @@ class ClientPrefs {
 	public static var arrowHSV:Array<Array<Int>> = [[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]];
 	public static var imagesPersist:Bool = false;
 	public static var ghostTapping:Bool = true;
+	public static var shaders:Bool = true;
+	public static var shaking:Bool = true;
 	public static var inputSystem:String = 'Austin';
 	public static var iconStyle:String = 'Austin Engine Style';
 	public static var timeBarType:String = 'Time Elapsed and Total time';
@@ -109,6 +111,8 @@ class ClientPrefs {
 		FlxG.save.data.arrowHSV = arrowHSV;
 		FlxG.save.data.imagesPersist = imagesPersist;
 		FlxG.save.data.ghostTapping = ghostTapping;
+		FlxG.save.data.shaders = shaders;
+		FlxG.save.data.shaking = shaking;
 		FlxG.save.data.inputSystem = inputSystem;
 		FlxG.save.data.iconStyle = iconStyle;
 		FlxG.save.data.timeBarType = timeBarType;
@@ -193,6 +197,12 @@ class ClientPrefs {
 		}
 		if(FlxG.save.data.ghostTapping != null) {
 			ghostTapping = FlxG.save.data.ghostTapping;
+		}
+		if(FlxG.save.data.shaders != null) {
+			shaders = FlxG.save.data.shaders;
+		}
+		if(FlxG.save.data.shaking != null) {
+			shaking = FlxG.save.data.shaking;
 		}
 		if(FlxG.save.data.timeBarType != null) {
 			timeBarType = FlxG.save.data.timeBarType;

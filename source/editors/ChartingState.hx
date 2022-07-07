@@ -90,6 +90,7 @@ class ChartingState extends MusicBeatState
 		['Screen Shake', "Value 1: Camera shake\nValue 2: HUD shake\n\nEvery value works as the following example: \"1, 0.05\".\nThe first number (1) is the duration.\nThe second number (0.05) is the intensity."],
 		['Change Character', "Value 1: Character to change (Dad, BF, GF)\nValue 2: New character's name"],
 		['Change Scroll Speed', "Value 1: Scroll Speed Multiplier (1 is default)\nValue 2: Time it takes to change fully in seconds."],
+		['Change Stage', "Warning: Stage sprites don't preload.\nThis mean the engine may freeze until\nThe stage loads. You can fix this\nby preloading the stage sprites with lua.\nValue 1: The stage to change to (Stage is default)"],
 		['Set poison', "Sets the amount of health to deplete over time\nValue 1: The number to deplete (0 is default)\n\nYou can also use poison notes\nor heal notes to change poison."],
 		['Default Camera Zoom', "Sets the default camera zoom.It's\nlike \"Add Camera Zoom\" but it doesn't zoom back.\nValue 1: Camera Zoom (Default: Based on map)\nValue 2: Tween Duration (Default: 0.5)"],
 		['Default CamHUD Zoom', "Sets the default hud zoom.It's\nlike \"Add Camera Zoom\" but it doesn't zoom back.\nValue 1: HUD Zoom (Default: 1)\nValue 2: Tween Duration (Default: 0.5)"],
