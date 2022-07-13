@@ -9,6 +9,7 @@ import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.input.keyboard.FlxKey;
 import flixel.addons.display.FlxGridOverlay;
+import flixel.addons.display.FlxBackdrop;
 import flixel.addons.transition.FlxTransitionSprite.GraphicTransTileDiamond;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.addons.transition.TransitionData;
@@ -88,6 +89,9 @@ class TitleState extends MusicBeatState
 	var logoTween:FlxTween;
 	var logoTweenMore:FlxTween;
 	var gfTween:FlxTween;
+	var gradTween:FlxTween;
+	var bgOverlay:FlxBackdrop;
+	var bgGradient:FlxSprite;
 
 	var austinJson:AustinJSON;
 
@@ -280,6 +284,7 @@ class TitleState extends MusicBeatState
 		Conductor.changeBPM(titleJSON.bpm);
 		persistentUpdate = true;
 
+
 		var bg:FlxSprite = new FlxSprite();
 		
 		if (titleJSON.backgroundSprite != null && titleJSON.backgroundSprite.length > 0 && titleJSON.backgroundSprite != "none"){
@@ -293,9 +298,33 @@ class TitleState extends MusicBeatState
 		// bg.updateHitbox();
 		add(bg);
 
+		bgOverlay = new FlxBackdrop(Paths.image('menubgOverlay'), 0.2, 0, true, true);
+		
+		bgOverlay.velocity.set(200, 200);
+		bgOverlay.updateHitbox();
+		bgOverlay.alpha = 0.5;
+		bgOverlay.screenCenter(X);
+		bgOverlay.visible = austinJson.menu.austinStyled;
+		add(bgOverlay);
+
+		bgGradient = new FlxSprite(-80).loadGraphic(Paths.image('menubgGradient'));
+		bgGradient.scrollFactor.set(0, 0);
+		bgGradient.setGraphicSize(Std.int(bgGradient.width * 1.175));
+		bgGradient.updateHitbox();
+		bgGradient.screenCenter();
+		bgGradient.antialiasing = ClientPrefs.globalAntialiasing;
+		bgGradient.visible = austinJson.menu.austinStyled;
+		bgGradient.alpha = 0.95;
+		add(bgGradient);
+
+
 		logoBl = new FlxSprite(titleJSON.titlex, titleJSON.titley);
 		if (titleJSON.austinLogo == true){
 			logoBl.frames = Paths.getSparrowAtlas('austinLogoBumpin');
+			titleJSON.titlex += 90;
+			titleJSON.titley += 125;
+			logoBl.x = titleJSON.titlex;
+			logoBl.y = titleJSON.titley;
 		}else logoBl.frames = Paths.getSparrowAtlas('logoBumpin');
 		
 		logoBl.antialiasing = ClientPrefs.globalAntialiasing;
@@ -711,6 +740,7 @@ class TitleState extends MusicBeatState
 	var increaseVolume:Bool = false;
 	function skipIntro():Void
 	{
+		
 		if (!skippedIntro)
 		{
 			if (titleJSON.tweens == true){
@@ -719,6 +749,11 @@ class TitleState extends MusicBeatState
 				gfTween = FlxTween.tween(gfDance, {x: titleJSON.gfx, y:titleJSON.gfy}, 3, {ease: FlxEase.elasticOut, startDelay: 0.25});
 				logoTween = FlxTween.tween(logoBl, {x: titleJSON.titlex, y:titleJSON.titley}, 3, {ease: FlxEase.elasticOut, startDelay: 0.25});
 			}
+
+			bgOverlay.alpha = 0;
+			FlxTween.tween(bgOverlay,{alpha: 0.5}, 5, {ease: FlxEase.quadInOut});
+			gradTween = FlxTween.tween(bgGradient,{alpha: 0.5}, 3, {ease: FlxEase.quadInOut,type: PINGPONG});
+
 
 			if (playJingle) //Ignore deez
 			{

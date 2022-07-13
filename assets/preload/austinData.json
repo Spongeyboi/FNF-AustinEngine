@@ -36,6 +36,7 @@
 			["Great", 0.9], 
 			["Sick!", 1], 
 			["Perfect!!", 1] 
-		]
+		],
+		"botplayText": "BOTPLAY"
 	}
 }

@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="titleOverlay.png">
+	<!-- Created with Adobe Animate version 22.0.5.191 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="TweenIn0000" x="0" y="0" width="75" height="72" frameX="-68" frameY="-66" frameWidth="260" frameHeight="260"/>
+	<SubTexture name="TweenIn0001" x="75" y="0" width="97" height="94" frameX="-60" frameY="-58" frameWidth="260" frameHeight="260"/>
+	<SubTexture name="TweenIn0002" x="172" y="0" width="117" height="115" frameX="-52" frameY="-50" frameWidth="260" frameHeight="260"/>
+	<SubTexture name="TweenIn0003" x="289" y="0" width="135" height="132" frameX="-45" frameY="-44" frameWidth="260" frameHeight="260"/>
+	<SubTexture name="TweenIn0004" x="424" y="0" width="151" height="149" frameX="-39" frameY="-38" frameWidth="260" frameHeight="260"/>
+	<SubTexture name="TweenIn0005" x="575" y="0" width="165" height="164" frameX="-34" frameY="-33" frameWidth="260" frameHeight="260"/>
+	<SubTexture name="TweenIn0006" x="740" y="0" width="179" height="177" frameX="-29" frameY="-28" frameWidth="260" frameHeight="260"/>
+	<SubTexture name="TweenIn0007" x="919" y="0" width="190" height="189" frameX="-25" frameY="-24" frameWidth="260" frameHeight="260"/>
+	<SubTexture name="TweenIn0008" x="1109" y="0" width="200" height="199" frameX="-21" frameY="-20" frameWidth="260" frameHeight="260"/>
+	<SubTexture name="TweenIn0009" x="1309" y="0" width="209" height="208" frameX="-18" frameY="-17" frameWidth="260" frameHeight="260"/>
+	<SubTexture name="TweenIn0010" x="1518" y="0" width="217" height="217" frameX="-15" frameY="-14" frameWidth="260" frameHeight="260"/>
+	<SubTexture name="TweenIn0011" x="1735" y="0" width="224" height="223" frameX="-13" frameY="-12" frameWidth="260" frameHeight="260"/>
+	<SubTexture name="TweenIn0012" x="0" y="223" width="229" height="229" frameX="-11" frameY="-10" frameWidth="260" frameHeight="260"/>
+	<SubTexture name="TweenIn0013" x="229" y="223" width="235" height="235" frameX="-9" frameY="-8" frameWidth="260" frameHeight="260"/>
+	<SubTexture name="TweenIn0014" x="464" y="223" width="238" height="239" frameX="-9" frameY="-7" frameWidth="260" frameHeight="260"/>
+	<SubTexture name="TweenIn0015" x="702" y="223" width="243" height="243" frameX="-7" frameY="-6" frameWidth="260" frameHeight="260"/>
+	<SubTexture name="TweenIn0016" x="945" y="223" width="247" height="247" frameX="-5" frameY="-5" frameWidth="260" frameHeight="260"/>
+	<SubTexture name="TweenIn0017" x="1192" y="223" width="251" height="251" frameX="-4" frameY="-3" frameWidth="260" frameHeight="260"/>
+	<SubTexture name="TweenIn0018" x="1443" y="223" width="254" height="254" frameX="-2" frameY="-2" frameWidth="260" frameHeight="260"/>
+	<SubTexture name="TweenIn0019" x="1697" y="223" width="256" height="257" frameX="-2" frameY="-1" frameWidth="260" frameHeight="260"/>
+	<SubTexture name="TweenIn0020" x="0" y="480" width="258" height="259" frameX="-1" frameY="0" frameWidth="260" frameHeight="260"/>
+	<SubTexture name="TweenIn0021" x="258" y="480" width="259" height="259" frameX="-1" frameY="0" frameWidth="260" frameHeight="260"/>
+	<SubTexture name="TweenIn0022" x="517" y="480" width="260" height="260"/>
+	<SubTexture name="TweenIn0023" x="777" y="480" width="260" height="260"/>
+	<SubTexture name="TweenIn0024" x="258" y="480" width="259" height="259" frameX="0" frameY="0" frameWidth="260" frameHeight="260"/>
+	<SubTexture name="TweenIn0025" x="0" y="480" width="258" height="259" frameX="-1" frameY="0" frameWidth="260" frameHeight="260"/>
+	<SubTexture name="TweenIn0026" x="1037" y="480" width="258" height="257" frameX="-1" frameY="-1" frameWidth="260" frameHeight="260"/>
+	<SubTexture name="TweenIn0027" x="1295" y="480" width="256" height="257" frameX="-2" frameY="-1" frameWidth="260" frameHeight="260"/>
+	<SubTexture name="TweenIn0028" x="1551" y="480" width="255" height="255" frameX="-2" frameY="-2" frameWidth="260" frameHeight="260"/>
+	<SubTexture name="TweenIn0029" x="1443" y="223" width="254" height="254" frameX="-3" frameY="-2" frameWidth="260" frameHeight="260"/>
+	<SubTexture name="TweenIn0030" x="0" y="740" width="251" height="251" frameX="-4" frameY="-3" frameWidth="260" frameHeight="260"/>
+	<SubTexture name="TweenIn0031" x="251" y="740" width="250" height="249" frameX="-4" frameY="-4" frameWidth="260" frameHeight="260"/>
+	<SubTexture name="TweenIn0032" x="501" y="740" width="247" height="248" frameX="-5" frameY="-4" frameWidth="260" frameHeight="260"/>
+	<SubTexture name="TweenIn0033" x="748" y="740" width="245" height="246" frameX="-6" frameY="-5" frameWidth="260" frameHeight="260"/>
+	<SubTexture name="TweenIn0034" x="748" y="740" width="245" height="246" frameX="-6" frameY="-6" frameWidth="260" frameHeight="260"/>
+	<SubTexture name="TweenIn0035" x="993" y="740" width="243" height="243" frameX="-7" frameY="-6" frameWidth="260" frameHeight="260"/>
+	<SubTexture name="TweenIn0036" x="1236" y="740" width="242" height="241" frameX="-7" frameY="-7" frameWidth="260" frameHeight="260"/>
+	<SubTexture name="TweenIn0037" x="1478" y="740" width="240" height="241" frameX="-8" frameY="-7" frameWidth="260" frameHeight="260"/>
+	<SubTexture name="TweenIn0038" x="1718" y="740" width="240" height="240" frameX="-8" frameY="-7" frameWidth="260" frameHeight="260"/>
+	<SubTexture name="TweenIn0039" x="0" y="991" width="240" height="241" frameX="-9" frameY="-7" frameWidth="260" frameHeight="260"/>
+</TextureAtlas>

@@ -6,7 +6,7 @@ import Discord.DiscordClient;
 #end
 import Section.SwagSection;
 import Song.SwagSong;
-import WiggleEffect.WiggleEffectType;
+//import WiggleEffect.WiggleEffectType;
 import flixel.FlxBasic;
 import flixel.FlxCamera;
 import flixel.FlxG;
@@ -103,6 +103,7 @@ class PlayState extends MusicBeatState
 	public var modchartSounds:Map<String, FlxSound> = new Map<String, FlxSound>();
 	public var modchartTexts:Map<String, ModchartText> = new Map<String, ModchartText>();
 	public var modchartSaves:Map<String, FlxSave> = new Map<String, FlxSave>();
+	public static var animatedShaders:Map<String, DynamicShaderHandler> = new Map<String, DynamicShaderHandler>();
 	//event variables
 	private var isCameraOnForcedPos:Bool = false;
 	#if (haxe >= "4.0.0")
@@ -248,7 +249,7 @@ class PlayState extends MusicBeatState
 	var heyTimer:Float;
 
 	var bgGirls:BackgroundGirls;
-	var wiggleShit:WiggleEffect = new WiggleEffect();
+	//var wiggleShit:WiggleEffect = new WiggleEffect();
 	var bgGhouls:BGSprite;
 
 	public var songScore:Int = 0;
@@ -302,6 +303,8 @@ class PlayState extends MusicBeatState
 	public var luaArray:Array<FunkinLua> = [];
 	private var luaDebugGroup:FlxTypedGroup<DebugLuaText>;
 	public var introSoundsSuffix:String = '';
+	public var luaShaders:Map<String, DynamicShaderHandler> = new Map<String, DynamicShaderHandler>();
+
 
 	// Debug buttons
 	private var debugKeysChart:Array<FlxKey>;
@@ -387,7 +390,7 @@ class PlayState extends MusicBeatState
 		Conductor.changeBPM(SONG.bpm, leatherSongSpeed);
 
 		//Divide the scroll speed by leather song speed so the scroll speed isn't gonna be fucked up.
-		if (leatherSongSpeed != 1) SONG.speed /= leatherSongSpeed;
+		SONG.speed /= leatherSongSpeed;
 
 		//Prevents song speeds under 0.1
 		if(SONG.speed < 0.1 && leatherSongSpeed > 1)
@@ -861,7 +864,7 @@ class PlayState extends MusicBeatState
 		scoreTxt.visible = !ClientPrefs.hideHud;
 		add(scoreTxt);
 
-		botplayTxt = new FlxText(400, timeBarBG.y + 55, FlxG.width - 800, "BOTPLAY", 32);
+		botplayTxt = new FlxText(400, timeBarBG.y + 55, FlxG.width - 800, austinJson.gameplay.botplayText, 32);
 		botplayTxt.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		botplayTxt.scrollFactor.set();
 		botplayTxt.borderSize = 1.25;
@@ -874,13 +877,24 @@ class PlayState extends MusicBeatState
 		var kadeEngineWatermark:FlxText = new FlxText(4, healthBarBG.y
 			+ 50, 0,
 			SONG.song
-			+ " - "+ austinJson.gameplay.watermarkText +" (AE "+MainMenuState.psychEngineVersion+")", 16);
+			+ " | "+ CoolUtil.difficulties[storyDifficulty], 16);
 		kadeEngineWatermark.setFormat(Paths.font("vcr.ttf"), 16, 0xFFFFFF, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		kadeEngineWatermark.scrollFactor.set();
 		kadeEngineWatermark.updateHitbox();
 		kadeEngineWatermark.cameras = [camHUD];
 		kadeEngineWatermark.visible = austinJson.gameplay.watermark;
 		add(kadeEngineWatermark);
+
+		var kadeEngineWatermarkRight:FlxText = new FlxText(FlxG.width, healthBarBG.y
+			+ 50, 0,
+			austinJson.gameplay.watermarkText +" (AE "+MainMenuState.psychEngineVersion+")", 16);
+		kadeEngineWatermarkRight.setFormat(Paths.font("vcr.ttf"), 16, 0xFFFFFF, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		kadeEngineWatermarkRight.scrollFactor.set();
+		kadeEngineWatermarkRight.updateHitbox();
+		kadeEngineWatermarkRight.cameras = [camHUD];
+		kadeEngineWatermarkRight.x -= (kadeEngineWatermarkRight.width + 4);
+		kadeEngineWatermarkRight.visible = austinJson.gameplay.watermark;
+		add(kadeEngineWatermarkRight);
 
 		strumLineNotes.cameras = [camHUD];
 		grpNoteSplashes.cameras = [camHUD];
@@ -1065,7 +1079,7 @@ class PlayState extends MusicBeatState
 		CustomFadeTransition.nextCamera = camOther;
 	}
 
-	public function addShaderToCamera(cam:String,effect:ShaderEffect){//STOLE FROM ANDROMEDA
+	public function addShaderToCamera(cam:String,effect:Dynamic){//STOLE FROM ANDROMEDA
 
 
 
@@ -1130,12 +1144,15 @@ class PlayState extends MusicBeatState
 					}
 					camOther.setFilters(newCamEffects);
 			default: 
-				camGameShaders.remove(effect);
-				var newCamEffects:Array<BitmapFilter>=[];
-				for(i in camGameShaders){
-				  newCamEffects.push(new ShaderFilter(i.shader));
+				if(modchartSprites.exists(cam)) {
+					Reflect.setProperty(modchartSprites.get(cam),"shader",null);
+				} else if(modchartTexts.exists(cam)) {
+					Reflect.setProperty(modchartTexts.get(cam),"shader",null);
+				} else {
+					var OBJ = Reflect.getProperty(PlayState.instance,cam);
+					Reflect.setProperty(OBJ,"shader", null);
 				}
-				camGame.setFilters(newCamEffects);
+
 		}
 
 
@@ -1155,6 +1172,10 @@ class PlayState extends MusicBeatState
 				camOtherShaders = [];
 				var newCamEffects:Array<BitmapFilter>=[];
 				camOther.setFilters(newCamEffects);
+			case 'camgame' | 'game': 
+				camGameShaders = [];
+				var newCamEffects:Array<BitmapFilter>=[];
+				camGame.setFilters(newCamEffects);
 			default: 
 				camGameShaders = [];
 				var newCamEffects:Array<BitmapFilter>=[];
@@ -1475,9 +1496,8 @@ class PlayState extends MusicBeatState
 				}
 			}
 		}
-		if (leatherSongSpeed != 1){
-			songSpeed = value;
-		}
+		songSpeed = (value / leatherSongSpeed);
+		
 		noteKillOffset = 350 / songSpeed;
 		return value;
 	}
@@ -2043,14 +2063,12 @@ class PlayState extends MusicBeatState
 		// FlxG.log.add(ChartParser.parse());
 		songSpeedType = ClientPrefs.getGameplaySetting('scrolltype','multiplicative');
 
-		if (leatherSongSpeed == 1){
-			switch(songSpeedType)
-			{
-				case "multiplicative":
-					songSpeed = SONG.speed * ClientPrefs.getGameplaySetting('scrollspeed', 1);
-				case "constant":
-					songSpeed = ClientPrefs.getGameplaySetting('scrollspeed', 1);
-			}
+		switch(songSpeedType)
+		{
+			case "multiplicative":
+				songSpeed = SONG.speed * ClientPrefs.getGameplaySetting('scrollspeed', 1) / leatherSongSpeed;
+			case "constant":
+				songSpeed = ClientPrefs.getGameplaySetting('scrollspeed', 1) / leatherSongSpeed;
 		}
 		
 		var songData = SONG;

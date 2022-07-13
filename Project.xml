@@ -140,7 +140,7 @@
 	<haxelib name="discord_rpc" if="desktop"/>
 
 	<!-- Austin shaders fix-->
-	<haxelib name="HxShaders" if="desktop"/>
+	<haxelib name="shadertools" if="desktop"/>
 
 	<!-- <haxelib name="hxcpp-debug-server" if="desktop"/> -->
 

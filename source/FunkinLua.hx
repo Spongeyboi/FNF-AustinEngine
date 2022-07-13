@@ -7,6 +7,8 @@ import llua.Convert;
 
 import animateatlas.AtlasFrameMaker;
 import flixel.FlxG;
+import openfl.display.ShaderParameter;
+import openfl.filters.ShaderFilter;
 import Shaders;
 import flixel.addons.effects.FlxTrail;
 import flixel.input.keyboard.FlxKey;
@@ -1724,9 +1726,8 @@ class FunkinLua {
 			luaTrace('musicFadeOut is deprecated! Use soundFadeOut instead.', false, true);
 		});
 
-				//SHADER SHIT
-		if (ClientPrefs.shaders == true)
-		{
+		//SHADER SHIT
+
 		Lua_helper.add_callback(lua, "addChromaticAbberationEffect", function(camera:String,chromeOffset:Float = 0.005) {
 
 			PlayState.instance.addShaderToCamera(camera, new ChromaticAberrationEffect(chromeOffset));
@@ -1753,6 +1754,45 @@ class FunkinLua {
 			PlayState.instance.addShaderToCamera(camera, new VCRDistortionEffect(glitchFactor,distortion,perspectiveOn,vignetteMoving));
 
 		});
+
+
+
+Lua_helper.add_callback(lua, "createShaders", function(shaderName:String, ?optimize:Bool = false)
+{
+	var shader = new DynamicShaderHandler(shaderName, optimize);
+
+	return shaderName;
+});
+/*
+Lua_helper.add_callback(lua, "modifyShaderProperty", function(shaderName:String, propertyName:String, value:Dynamic)
+{
+	//var handler:DynamicShaderHandler = PlayState.instance.luaShaders.get(shaderName);
+	//trace(Reflect.getProperty(handler.shader.data, propertyName));
+	//Reflect.setProperty(Reflect.getProperty(handler.shader.data, propertyName), 'value', value);
+	handler.modifyShaderProperty(propertyName, value);
+});
+// shader set
+*/
+Lua_helper.add_callback(lua, "setShadersToCamera", function(shaderName:Array<String>, cameraName:String)
+{
+
+	var shaderArray = new Array<BitmapFilter>();
+
+	for (i in shaderName)
+	{
+		shaderArray.push(new ShaderFilter(PlayState.instance.luaShaders[i].shader));
+	}
+
+	cameraFromString(cameraName).setFilters(shaderArray);
+});
+
+// shader clear
+
+Lua_helper.add_callback(lua, "clearShadersFromCamera", function(cameraName)
+{
+	cameraFromString(cameraName).setFilters([]);
+});	
+
 		Lua_helper.add_callback(lua, "addGlitchEffect", function(camera:String,waveSpeed:Float = 0.1,waveFrq:Float = 0.1,waveAmp:Float = 0.1) {
 
 			PlayState.instance.addShaderToCamera(camera, new GlitchEffect(waveSpeed,waveFrq,waveAmp));
@@ -1797,8 +1837,7 @@ class FunkinLua {
 			PlayState.instance.clearShaderFromCamera(camera);
 		});
 		Discord.DiscordClient.addLuaCallbacks(lua);
-		}
-		
+
 		call('onCreate', []);
 		#end
 	}

@@ -42,7 +42,8 @@ typedef AustinJSON =
         watermark:Bool,
         watermarkText:String,
         comboSprite:Bool,
-		ratings:Array<Dynamic>
+		ratings:Array<Dynamic>,
+		botplayText:String,
 	}
 }
 

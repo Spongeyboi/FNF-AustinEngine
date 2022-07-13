@@ -1,8 +1,8 @@
 package;
 
-import tools.FlxShader;
+import dashadertools.Flxfixedshaders;
 
-class OverlayShader extends FlxShader
+class OverlayShader extends Flxfixedshaders
 {
 	@:glFragmentSource('
 		#pragma header
