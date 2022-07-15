@@ -25,6 +25,7 @@ typedef AustinJSON =
 	    austinLogo:Bool,
     },
     menu:{
+		menuItems:Array<String>,
         titleMusic:String,
         mainMusic:String,
         optionMusic:String,
@@ -44,6 +45,10 @@ typedef AustinJSON =
         comboSprite:Bool,
 		ratings:Array<Dynamic>,
 		botplayText:String,
+	},
+	misc:{
+		discordrpc:String,
+		modName:String
 	}
 }
 

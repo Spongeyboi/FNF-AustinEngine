@@ -39,15 +39,8 @@ class MainMenuState extends MusicBeatState
 	private var camGame:FlxCamera;
 	private var camAchievement:FlxCamera;
 	
-	var optionShit:Array<String> = [
-		'story_mode',
-		'freeplay',
-		#if MODS_ALLOWED 'mods', #end
-		#if ACHIEVEMENTS_ALLOWED 'awards', #end
-		'credits',
-		#if !switch 'donate', #end
-		'options'
-	];
+	var optionShit:Array<String> = AustinData.get().menu.menuItems;
+	
 
 	var magenta:FlxSprite;
 	var camFollow:FlxObject;
@@ -61,6 +54,23 @@ class MainMenuState extends MusicBeatState
 
 	override function create()
 	{
+		for (i in 0...optionShit.length){
+			#if !MODS_ALLOWED
+				if (optionShit[i] == 'mods'){
+					optionShit.remove('mods');
+				}
+			#end
+			#if !ACHIEVEMENTS_ALLOWED
+				if (optionShit[i] == 'awards'){
+					optionShit.remove('awards');
+				}
+			#end
+			#if switch
+				if (optionShit[i] == 'donate'){
+					optionShit.remove('donate');
+				}
+			#end
+		}
 		WeekData.loadTheFirstEnabledMod();
 
 		#if desktop

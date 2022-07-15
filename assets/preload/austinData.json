@@ -14,6 +14,7 @@
 		"austinLogo": true
 	},
 	"menu":{
+		"menuItems":["story_mode", "freeplay", "mods", "awards", "credits", "donate", "options"],
         "titleMusic":"freakyMenu",
         "mainMusic":"menuMusic",
         "optionMusic":"breakfast",
@@ -38,5 +39,9 @@
 			["Perfect!!", 1] 
 		],
 		"botplayText": "BOTPLAY"
+	},
+	"misc":{
+		"discordrpc":"991377849263083610",
+		"modName":""
 	}
 }
