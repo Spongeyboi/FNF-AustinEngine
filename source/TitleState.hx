@@ -521,6 +521,11 @@ class TitleState extends MusicBeatState
 					FlxTween.tween(titleText, {y: -(FlxG.height) - 50}, 1.5, {ease: FlxEase.elasticIn});
 				}
 
+				if (austinJson.menu.transTweens){
+					FlxTween.tween(FlxG.camera, {angle: 10, zoom: 3}, 1.5, {ease: FlxEase.backInOut});
+				}
+
+				if (austinJson.menu.titleMusic != austinJson.menu.mainMusic)
 				FlxG.sound.music.fadeOut(0.7, 0);
 
 				new FlxTimer().start(1, function(tmr:FlxTimer)

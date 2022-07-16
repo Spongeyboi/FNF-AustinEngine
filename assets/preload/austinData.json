@@ -20,7 +20,8 @@
         "optionMusic":"breakfast",
 		"centerMenuButtons":true,
 		"menuButtonsX":"100",
-		"austinStyled":true
+		"austinStyled":true,
+		"transTweens":true
     },
 	"gameplay":{
 		"watermark":true,

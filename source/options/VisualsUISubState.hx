@@ -61,7 +61,7 @@ class VisualsUISubState extends BaseOptionsMenu
 			'iconStyle',
 			'string',
 			'Austin Engine Style',
-			['Classic', 'Austin Engine Style', 'OS Engine Style', 'Golden Apple Style', 'Dave and Bambi Style', 'Grow/Shrink','static','funny','Ends of the health bar']);
+			['Classic', 'Austin Engine Style', 'OS Engine Style', 'Golden Apple Style', 'Dave and Bambi Style', 'Grow/Shrink','static','bumpin','Ends of the health bar']);
 		addOption(option);
 
 		var option:Option = new Option('Flashing Lights',

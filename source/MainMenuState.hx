@@ -170,6 +170,10 @@ class MainMenuState extends MusicBeatState
 
 		FlxG.camera.follow(camFollowPos, null, 1);
 
+		var versionShit:FlxText = new FlxText(12, FlxG.height - 64, 0, austinJson.misc.modName, 12);
+		versionShit.scrollFactor.set();
+		versionShit.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		add(versionShit);
 		var versionShit:FlxText = new FlxText(12, FlxG.height - 44, 0, "Austin Engine v" + psychEngineVersion, 12);
 		versionShit.scrollFactor.set();
 		versionShit.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
@@ -199,8 +203,12 @@ class MainMenuState extends MusicBeatState
 		super.create();
 		FlxG.mouse.visible = true;
 
+		if (austinJson.menu.mainMusic != austinJson.menu.optionMusic || austinJson.menu.mainMusic != austinJson.menu.titleMusic){
 		FlxG.sound.playMusic(Paths.music(austinJson.menu.mainMusic), 0);
-		FlxG.sound.music.fadeIn(4, 0, 0.7);
+		}
+		if (FlxG.sound.music.volume < 0.7){
+			FlxG.sound.music.fadeIn(4, 0, 0.7);
+		}
 	}
 
 	#if ACHIEVEMENTS_ALLOWED
@@ -257,8 +265,14 @@ class MainMenuState extends MusicBeatState
 					selectedSomethin = true;
 					FlxG.sound.play(Paths.sound('confirmMenu'));
 
-					if (optionShit[curSelected] == 'options'){
+					if (optionShit[curSelected] == 'options' && (austinJson.menu.mainMusic != austinJson.menu.optionMusic)){
 						FlxG.sound.music.fadeOut(0.7, 0);
+					}
+
+					if (austinJson.menu.transTweens){
+						FlxTween.tween(FlxG.camera, {zoom: 1.5}, 0.5, {ease: FlxEase.circOut,onComplete:function(twn:FlxTween){
+							FlxTween.tween(FlxG.camera, {zoom: 8, angle: 16}, 1, {ease: FlxEase.backIn});
+						}});
 					}
 
 					if(ClientPrefs.flashing) FlxFlicker.flicker(magenta, 1.1, 0.15, false);
@@ -277,6 +291,9 @@ class MainMenuState extends MusicBeatState
 						}
 						else
 						{
+							if (austinJson.menu.transTweens){
+								FlxTween.tween(spr, {x: ((FlxG.width * 0.5) - spr.width), y: ((FlxG.height * 0.5) - spr.height)}, 0.25, {ease: FlxEase.circOut});
+							}
 							FlxFlicker.flicker(spr, 1, 0.06, false, false, function(flick:FlxFlicker)
 							{
 								var daChoice:String = optionShit[curSelected];

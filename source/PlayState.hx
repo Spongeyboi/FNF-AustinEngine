@@ -390,10 +390,11 @@ class PlayState extends MusicBeatState
 		Conductor.changeBPM(SONG.bpm, leatherSongSpeed);
 
 		//Divide the scroll speed by leather song speed so the scroll speed isn't gonna be fucked up.
-		SONG.speed /= leatherSongSpeed;
+		if (leatherSongSpeed > 1) SONG.speed /= (leatherSongSpeed * 0.5);
+		if (leatherSongSpeed < 1) SONG.speed *= (leatherSongSpeed * 0.5);
 
 		//Prevents song speeds under 0.1
-		if(SONG.speed < 0.1 && leatherSongSpeed > 1)
+		if(SONG.speed < 0.1 && (leatherSongSpeed > 1 || leatherSongSpeed < 1))
 			SONG.speed = 0.1;
 
 		songSpeed = SONG.speed;
@@ -409,11 +410,11 @@ class PlayState extends MusicBeatState
 		// String that contains the mode defined here so it isn't necessary to call changePresence for each mode
 		if (isStoryMode)
 		{
-			detailsText = "Story Mode: " + WeekData.getCurrentWeek().weekName+ (modLoaded ? '\nMod: '+Paths.currentModDirectory : '\nNo mods loaded');
+			detailsText = "Story: " + WeekData.getCurrentWeek().weekName;
 		}
 		else
 		{
-			detailsText = "Freeplay" + (modLoaded ? '\nMod: '+Paths.currentModDirectory : '\nNo mods loaded');
+			detailsText = "Freeplay";
 		}
 
 		// String for when the game is paused
@@ -1061,7 +1062,7 @@ class PlayState extends MusicBeatState
 
 		#if desktop
 		// Updating Discord Rich Presence.
-		DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconP2.getCharacter());
+		DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")" + (modLoaded ? '\nMod: '+Paths.currentModDirectory : '\nNo mods loaded'), iconP2.getCharacter());
 		#end
 
 		if(!ClientPrefs.controllerMode)
@@ -1496,7 +1497,8 @@ class PlayState extends MusicBeatState
 				}
 			}
 		}
-		songSpeed = (value / leatherSongSpeed);
+		if (leatherSongSpeed > 1) songSpeed = (value / leatherSongSpeed);
+		if (leatherSongSpeed < 1) songSpeed = (value * leatherSongSpeed);
 		
 		noteKillOffset = 350 / songSpeed;
 		return value;
@@ -2066,9 +2068,15 @@ class PlayState extends MusicBeatState
 		switch(songSpeedType)
 		{
 			case "multiplicative":
-				songSpeed = SONG.speed * ClientPrefs.getGameplaySetting('scrollspeed', 1) / leatherSongSpeed;
+				if (leatherSongSpeed > 1)
+					songSpeed = SONG.speed * ClientPrefs.getGameplaySetting('scrollspeed', 1) / (leatherSongSpeed * 0.5);
+				if (leatherSongSpeed < 1)
+					songSpeed = SONG.speed * ClientPrefs.getGameplaySetting('scrollspeed', 1) * (leatherSongSpeed * 0.5);
 			case "constant":
-				songSpeed = ClientPrefs.getGameplaySetting('scrollspeed', 1) / leatherSongSpeed;
+				if (leatherSongSpeed > 1)
+					songSpeed = ClientPrefs.getGameplaySetting('scrollspeed', 1) / (leatherSongSpeed * 0.5);
+				if (leatherSongSpeed < 1)
+					songSpeed = ClientPrefs.getGameplaySetting('scrollspeed', 1) * (leatherSongSpeed * 0.5);
 		}
 		
 		var songData = SONG;
@@ -2404,11 +2412,11 @@ class PlayState extends MusicBeatState
 			#if desktop
 			if (startTimer != null && startTimer.finished)
 			{
-				DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconP2.getCharacter(), true, songLength - Conductor.songPosition - ClientPrefs.noteOffset);
+				DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")" + (modLoaded ? '\nMod: '+Paths.currentModDirectory : '\nNo mods loaded'), iconP2.getCharacter(), true, songLength - Conductor.songPosition - ClientPrefs.noteOffset);
 			}
 			else
 			{
-				DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconP2.getCharacter());
+				DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")" + (modLoaded ? '\nMod: '+Paths.currentModDirectory : '\nNo mods loaded'), iconP2.getCharacter());
 			}
 			#end
 		}
@@ -2423,11 +2431,11 @@ class PlayState extends MusicBeatState
 		{
 			if (Conductor.songPosition > 0.0)
 			{
-				DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconP2.getCharacter(), true, songLength - Conductor.songPosition - ClientPrefs.noteOffset);
+				DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")" + (modLoaded ? '\nMod: '+Paths.currentModDirectory : '\nNo mods loaded'), iconP2.getCharacter(), true, songLength - Conductor.songPosition - ClientPrefs.noteOffset);
 			}
 			else
 			{
-				DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconP2.getCharacter());
+				DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")" + (modLoaded ? '\nMod: '+Paths.currentModDirectory : '\nNo mods loaded'), iconP2.getCharacter());
 			}
 		}
 		#end
@@ -2440,7 +2448,7 @@ class PlayState extends MusicBeatState
 		#if desktop
 		if (health > 0 && !paused)
 		{
-			DiscordClient.changePresence(detailsPausedText, SONG.song + " (" + storyDifficultyText + ")", iconP2.getCharacter());
+			DiscordClient.changePresence(detailsPausedText, SONG.song + " (" + storyDifficultyText + ")" + (modLoaded ? '\nMod: '+Paths.currentModDirectory : '\nNo mods loaded'), iconP2.getCharacter());
 		}
 		#end
 
@@ -2691,7 +2699,7 @@ class PlayState extends MusicBeatState
 				//}
 		
 				#if desktop
-				DiscordClient.changePresence(detailsPausedText, SONG.song + " (" + storyDifficultyText + ")", iconP2.getCharacter());
+				DiscordClient.changePresence(detailsPausedText, SONG.song + " (" + storyDifficultyText + ")" + (modLoaded ? '\nMod: '+Paths.currentModDirectory : '\nNo mods loaded'), iconP2.getCharacter());
 				#end
 			}
 		}
@@ -3039,7 +3047,7 @@ class PlayState extends MusicBeatState
 				
 				#if desktop
 				// Game Over doesn't get his own variable because it's only used here
-				DiscordClient.changePresence("Game Over - " + detailsText, SONG.song + " (" + storyDifficultyText + ")", iconP2.getCharacter());
+				DiscordClient.changePresence("Game Over - " + detailsText, SONG.song + " (" + storyDifficultyText + ")" + (modLoaded ? '\nMod: '+Paths.currentModDirectory : '\nNo mods loaded'), iconP2.getCharacter());
 				#end
 				isDead = true;
 				return true;
@@ -3832,23 +3840,19 @@ class PlayState extends MusicBeatState
 
 		if (ClientPrefs.inputSystem == 'Austin'){
 
-			daRating = "sick";
+			daRating = "shit";
+			var timingWindows:Array<Int> = [ClientPrefs.sickWindow, ClientPrefs.goodWindow, ClientPrefs.badWindow];
 
-			if (noteDiff > Conductor.safeZoneOffset * 0.75)
-			{
-				
-				daRating = 'shit';
-				score = 50;
-			}
-			else if (noteDiff > Conductor.safeZoneOffset * 0.5)
+			if (noteDiff > Conductor.safeZoneOffset * timingWindows[2])
 			{
 				daRating = 'bad';
-				score = 100;
 			}
-			else if (noteDiff > Conductor.safeZoneOffset * 0.25)
+			else if (noteDiff > Conductor.safeZoneOffset * timingWindows[1])
 			{
 				daRating = 'good';
-				score = 200;
+			}else if (noteDiff > Conductor.safeZoneOffset * timingWindows[0])
+			{
+				daRating = 'sick';
 			}
 
 			if(daRating == 'sick' && !note.noteSplashDisabled)
@@ -4851,6 +4855,12 @@ class PlayState extends MusicBeatState
 			
 			iconP1.updateHitbox();
 			iconP2.updateHitbox();
+		}else if (ClientPrefs.iconStyle == 'bumpin' && curBeat % gfSpeed == 0) {
+			FlxTween.tween(iconP1.scale, {x: 1.5, y: 0.5}, Conductor.crochet / 1300 * gfSpeed, {ease: FlxEase.elasticOut, type:BACKWARD});
+			FlxTween.tween(iconP2.scale, {x: 1.5, y: 0.5}, Conductor.crochet / 1300 * gfSpeed, {ease: FlxEase.elasticOut, type:BACKWARD});
+			
+			iconP1.updateHitbox();
+			iconP2.updateHitbox();
 		}
 
 
@@ -4917,10 +4927,6 @@ class PlayState extends MusicBeatState
 				zoomHealthIcon = true;
 				iconP1.scale.set(1.2, 1.2);
 				iconP2.scale.set(1.2, 1.2);
-			case 'funny':
-				zoomHealthIcon = true;
-				iconP1.scale.set(FlxG.random.float(-5), FlxG.random.float(5));
-				iconP2.scale.set(FlxG.random.float(-5), FlxG.random.float(5));
 		}
 		iconP1.updateHitbox();
 		iconP2.updateHitbox();

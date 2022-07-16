@@ -13,6 +13,7 @@ import flixel.group.FlxGroup;
 import flixel.math.FlxMath;
 import flixel.text.FlxText;
 import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import lime.net.curl.CURLCode;
@@ -251,6 +252,10 @@ class StoryMenuState extends MusicBeatState
 			else if (controls.ACCEPT)
 			{
 				selectWeek();
+				if (source.AustinData.get().menu.transTweens){
+					FlxTween.tween(FlxG.camera, {angle: 16,y:2000}, 1.5, {ease: FlxEase.backIn});
+					FlxTween.tween(FlxG.camera, {alpha: 0}, 0.5, {ease: FlxEase.quadInOut,startDelay: 0.75});
+				}
 			}
 		}
 

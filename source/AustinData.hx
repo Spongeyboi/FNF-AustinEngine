@@ -32,6 +32,7 @@ typedef AustinJSON =
 		menuButtonsX:Float,
 		austinStyled:Bool,
 		centerMenuButtons:Bool,
+		transTweens:Bool,
     },
     socials:{
 		twitter:String,
